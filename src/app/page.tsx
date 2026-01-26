@@ -67,15 +67,13 @@ export default function PRoastRetro() {
       {/* ═══════════════════════════════════════════════════════════════ */}
 
       <header className="border-b" style={{ borderColor: '#6e6a86' }}>
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between" style={{ color: '#eb6f92' }}>
-            <span className="tracking-wider font-bold">PROAST</span>
-            <div className="flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
-              <span>[DOCS]</span>
-              <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
-              <span>[GITHUB]</span>
-              <span>[@]</span>
-            </div>
+        <div className="flex items-center justify-between px-6 py-4">
+          <span className="tracking-wider font-bold" style={{ color: '#eb6f92' }}>PROAST</span>
+          <div className="flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
+            <span>[DOCS]</span>
+            <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
+            <span>[GITHUB]</span>
+            <span>[@]</span>
           </div>
         </div>
       </header>
