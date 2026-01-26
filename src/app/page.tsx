@@ -236,13 +236,13 @@ export default function PRoastRetro() {
         {/* ═══════════════════════════════════════════════════════════════ */}
 
         {(roastResult || isLoading) && (
-          <div className="mb-12 border-2 p-8" style={{ borderColor: '#eb6f92' }}>
-            <div className="text-center mb-6" style={{ color: '#eb6f92' }}>
+          <div className="mb-12 border-2 p-8" style={{ borderColor: severityLevels[severityIndex].color }}>
+            <div className="text-center mb-6" style={{ color: severityLevels[severityIndex].color }}>
               <span className="text-lg font-bold">// ROAST RESULTS</span>
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8" style={{ color: '#ffe9b0' }}>
+              <div className="text-center py-8" style={{ color: severityLevels[severityIndex].color }}>
                 <p>[~] Analyzing your code...</p>
                 <p>[~] Finding all the sins...</p>
                 <p>[~] Preparing brutal honesty...</p>
@@ -250,7 +250,7 @@ export default function PRoastRetro() {
             ) : roastResult && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <p className="text-xl font-bold mb-2" style={{ color: '#eb6f92' }}>
+                  <p className="text-xl font-bold mb-2" style={{ color: severityLevels[severityIndex].color }}>
                     {roastResult.summary.headline}
                   </p>
                   <p className="text-sm mb-4" style={{ color: '#a8b2c3' }}>
