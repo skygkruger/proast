@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.fire-glow {
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.4);
+}
+
+.fire-glow:hover {
+  box-shadow: 0 0 50px rgba(249, 115, 22, 0.6);
+}
+
+.sin-card {
+  background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+  border-left: 4px solid #f97316;
+}
+
+.sin-card.venial { border-left-color: #eab308; }
+.sin-card.mortal { border-left-color: #f97316; }
+.sin-card.cardinal { border-left-color: #ef4444; }
+
+.flame-icon { color: #404040; transition: color 0.2s; }
+.flame-icon.active { color: #f97316; filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6)); }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
