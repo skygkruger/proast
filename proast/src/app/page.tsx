@@ -80,17 +80,16 @@ export default function Home() {
             <button
               key={opt.level}
               onClick={() => setSeverity(opt.level)}
-              className={`px-5 py-2.5 rounded-lg font-medium transition border ${
-                severity === opt.level
-                  ? opt.color === 'green' ? 'bg-green-500 text-black border-green-500' :
-                    opt.color === 'yellow' ? 'bg-yellow-500 text-black border-yellow-500' :
+              className={`px-5 py-2.5 rounded-lg font-medium transition border ${severity === opt.level
+                ? opt.color === 'green' ? 'bg-green-500 text-black border-green-500' :
+                  opt.color === 'yellow' ? 'bg-yellow-500 text-black border-yellow-500' :
                     opt.color === 'orange' ? 'bg-orange-500 text-black border-orange-500' :
-                    'bg-red-500 text-white border-red-500'
-                  : opt.color === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
-                    opt.color === 'yellow' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                      'bg-red-500 text-white border-red-500'
+                : opt.color === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
+                  opt.color === 'yellow' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
                     opt.color === 'orange' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
-                    'bg-red-500/10 text-red-400 border-red-500/30'
-              }`}
+                      'bg-red-500/10 text-red-400 border-red-500/30'
+                }`}
             >
               {opt.emoji} {opt.label}
             </button>
@@ -136,7 +135,7 @@ export default function Home() {
             <div className="flex gap-8">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Rating</p>
-                <div className="flex">{[1,2,3,4,5].map(i => (
+                <div className="flex">{[1, 2, 3, 4, 5].map(i => (
                   <Flame key={i} className={`w-6 h-6 ${i <= result.summary.overallRating ? 'text-orange-400' : 'text-gray-700'}`} fill={i <= result.summary.overallRating ? 'currentColor' : 'none'} />
                 ))}</div>
               </div>
@@ -151,11 +150,10 @@ export default function Home() {
             {result.sins.map((sin, i) => (
               <div key={i} className={`sin-card ${sin.severity} rounded-xl p-5`}>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    sin.severity === 'cardinal' ? 'bg-red-500/20 text-red-400' :
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${sin.severity === 'cardinal' ? 'bg-red-500/20 text-red-400' :
                     sin.severity === 'mortal' ? 'bg-orange-500/20 text-orange-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>{sin.severity.toUpperCase()}</span>
+                      'bg-yellow-500/20 text-yellow-400'
+                    }`}>{sin.severity.toUpperCase()}</span>
                   <span className="text-sm text-gray-500">{sin.category}</span>
                 </div>
                 <p className="text-white mb-4">{sin.description}</p>
@@ -199,7 +197,14 @@ export default function Home() {
               <li>✓ 💀 SAVAGE mode</li>
               <li>✓ API access</li>
             </ul>
-            <button className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl font-semibold fire-glow">Upgrade</button>
+            <a
+              href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all"
+            >
+              Upgrade to Pro
+            </a>
           </div>
         </div>
       </section>
