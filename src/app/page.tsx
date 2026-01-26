@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import type { SeverityLevel, RoastResult } from '@/types/roast'
 
 // ═══════════════════════════════════════════════════════════════
@@ -70,7 +71,7 @@ export default function PRoastRetro() {
         <div className="flex items-center justify-between px-6 py-4">
           <span className="tracking-wider font-bold" style={{ color: '#eb6f92' }}>PROAST</span>
           <div className="flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
-            <span>[DOCS]</span>
+            <Link href="/docs" className="hover:text-[#eb6f92] transition-colors">[DOCS]</Link>
             <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
             <span>[GITHUB]</span>
             <span>[@]</span>
