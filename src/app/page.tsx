@@ -1,223 +1,481 @@
 'use client'
 
 import { useState } from 'react'
-import { Flame, Code, ArrowRight, Copy, Check, Share2 } from 'lucide-react'
 import type { SeverityLevel, RoastResult } from '@/types/roast'
 
-const SEVERITY_OPTIONS = [
-  { level: 'gentle' as SeverityLevel, label: 'Gentle', emoji: '🌸', color: 'green' },
-  { level: 'honest' as SeverityLevel, label: 'Honest', emoji: '😐', color: 'yellow' },
-  { level: 'brutal' as SeverityLevel, label: 'Brutal', emoji: '🔥', color: 'orange' },
-  { level: 'savage' as SeverityLevel, label: 'Savage', emoji: '💀', color: 'red' },
+// ═══════════════════════════════════════════════════════════════
+//  PROAST - PASTEL RETRO TERMINAL REDESIGN
+//  Primary Accent: Soft Coral (#eb6f92)
+// ═══════════════════════════════════════════════════════════════
+
+const severityLevels = [
+  { level: 'gentle' as SeverityLevel, label: 'GENTLE', icon: ':)', bar: '░░░░', color: '#a8d8b9', desc: 'kind mentor' },
+  { level: 'honest' as SeverityLevel, label: 'HONEST', icon: ':|', bar: '▒▒░░', color: '#ffe9b0', desc: 'straight shooter' },
+  { level: 'brutal' as SeverityLevel, label: 'BRUTAL', icon: '>:(', bar: '▓▓▒░', color: '#f5a97f', desc: 'no sugar coating' },
+  { level: 'savage' as SeverityLevel, label: 'SAVAGE', icon: 'X_X', bar: '████', color: '#eb6f92', desc: 'gordon ramsay mode' },
 ]
 
-export default function Home() {
-  const [code, setCode] = useState('')
-  const [severity, setSeverity] = useState<SeverityLevel>('brutal')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<RoastResult | null>(null)
+export default function PRoastRetro() {
+  const [codeInput, setCodeInput] = useState('')
+  const [roastResult, setRoastResult] = useState<RoastResult | null>(null)
+  const [severityIndex, setSeverityIndex] = useState(0) // Default to GENTLE
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState(false)
 
   const handleRoast = async () => {
-    if (!code.trim()) return
-    setLoading(true)
+    if (!codeInput.trim()) return
+    setIsLoading(true)
+    setRoastResult(null)
     setError('')
-    setResult(null)
 
     try {
       const response = await fetch('/api/roast', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.trim(), severity }),
+        body: JSON.stringify({
+          code: codeInput.trim(),
+          severity: severityLevels[severityIndex].level
+        }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Failed to roast')
-      setResult(data.result)
+      setRoastResult(data.result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
-  const copyResult = async () => {
-    if (!result) return
-    await navigator.clipboard.writeText(`🔥 PRoast: ${result.summary.headline}\n\nRating: ${'🔥'.repeat(result.summary.overallRating)}/5\nSins: ${result.summary.totalSins}\n\nGet roasted at proast.dev`)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyRoast = async () => {
+    if (!roastResult) return
+    await navigator.clipboard.writeText(
+      `PRoast: ${roastResult.summary.headline}\n\nRating: ${roastResult.summary.overallRating}/5\nSins: ${roastResult.summary.totalSins}\n\nGet roasted at proast.dev`
+    )
   }
 
   return (
-    <main className="min-h-screen">
-      <header className="border-b border-white/10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-              <Flame className="w-6 h-6 text-white" />
+    <div
+      className="min-h-screen font-mono text-sm leading-relaxed"
+      style={{
+        backgroundColor: '#1a1a2e',
+        color: '#a8b2c3'
+      }}
+    >
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*                            HEADER                               */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+
+      <header className="border-b" style={{ borderColor: '#6e6a86' }}>
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between" style={{ color: '#eb6f92' }}>
+            <span className="tracking-wider font-bold">PROAST</span>
+            <div className="flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
+              <span>[DOCS]</span>
+              <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
+              <span>[GITHUB]</span>
+              <span>[@]</span>
             </div>
-            <span className="font-bold text-2xl">PRoast</span>
           </div>
-          <a href="#pricing" className="text-sm text-gray-400 hover:text-white">Pricing</a>
         </div>
       </header>
 
-      <section className="max-w-3xl mx-auto px-4 pt-16 pb-8 text-center">
-        <div className="inline-flex items-center gap-2 bg-orange-500/10 text-orange-400 px-4 py-2 rounded-full text-sm mb-6">
-          <Flame className="w-4 h-4" /> Brutally Honest Code Review
-        </div>
-        <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-          Get Your Code <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Roasted</span>
-        </h1>
-        <p className="text-xl text-gray-400 mb-8">
-          Choose your pain level. Every roast comes with real fixes.
-        </p>
-      </section>
+      <main className="max-w-5xl mx-auto px-6 py-12">
 
-      <section className="max-w-3xl mx-auto px-4 mb-6">
-        <div className="flex flex-wrap justify-center gap-3">
-          {SEVERITY_OPTIONS.map((opt) => (
-            <button
-              key={opt.level}
-              onClick={() => setSeverity(opt.level)}
-              className={`px-5 py-2.5 rounded-lg font-medium transition border ${severity === opt.level
-                ? opt.color === 'green' ? 'bg-green-500 text-black border-green-500' :
-                  opt.color === 'yellow' ? 'bg-yellow-500 text-black border-yellow-500' :
-                    opt.color === 'orange' ? 'bg-orange-500 text-black border-orange-500' :
-                      'bg-red-500 text-white border-red-500'
-                : opt.color === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
-                  opt.color === 'yellow' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                    opt.color === 'orange' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
-                      'bg-red-500/10 text-red-400 border-red-500/30'
-                }`}
-            >
-              {opt.emoji} {opt.label}
-            </button>
-          ))}
-        </div>
-      </section>
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                          ASCII LOGO                             */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
 
-      <section className="max-w-3xl mx-auto px-4 mb-12">
-        <div className="bg-[#141414] border border-[#262626] rounded-2xl p-6">
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="// Paste your code here..."
-            className="w-full h-64 bg-black/50 border border-[#262626] rounded-xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/50 resize-none font-mono text-sm"
-          />
-          <button
-            onClick={handleRoast}
-            disabled={loading || !code.trim()}
-            className="w-full mt-4 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2 fire-glow"
+        <div className="text-center mb-8" style={{ color: '#eb6f92' }}>
+          <pre
+            className="inline-block"
+            style={{
+              fontSize: '16px',
+              lineHeight: 1.05,
+              fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+              textAlign: 'left'
+            }}
           >
-            {loading ? (
-              <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Roasting...</>
-            ) : (
-              <><Flame className="w-5 h-5" /> Roast My Code <ArrowRight className="w-5 h-5" /></>
-            )}
-          </button>
-          {error && <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">{error}</div>}
+{`
+██████╗ ██████╗  ██████╗  █████╗ ███████╗████████╗
+██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝╚══██╔══╝
+██████╔╝██████╔╝██║   ██║███████║███████╗   ██║
+██╔═══╝ ██╔══██╗██║   ██║██╔══██║╚════██║   ██║
+██║     ██║  ██║╚██████╔╝██║  ██║███████║   ██║
+╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝
+`}
+          </pre>
+          <p className="text-xs tracking-widest mt-2" style={{ color: '#f2cdcd' }}>
+            ·:·:· CODE REVIEWER WITH ATTITUDE v1.0 ·:·:·
+          </p>
         </div>
-      </section>
 
-      {result && (
-        <section className="max-w-3xl mx-auto px-4 mb-20">
-          <div className="bg-[#141414] border border-[#262626] rounded-2xl p-8 mb-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">{result.summary.headline}</h2>
-                <p className="text-gray-400">{result.summary.verdict}</p>
-              </div>
-              <button onClick={copyResult} className="p-2 hover:bg-white/10 rounded-lg">
-                {copied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-gray-400" />}
-              </button>
-            </div>
-            <div className="flex gap-8">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Rating</p>
-                <div className="flex">{[1, 2, 3, 4, 5].map(i => (
-                  <Flame key={i} className={`w-6 h-6 ${i <= result.summary.overallRating ? 'text-orange-400' : 'text-gray-700'}`} fill={i <= result.summary.overallRating ? 'currentColor' : 'none'} />
-                ))}</div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Sins Found</p>
-                <p className="text-3xl font-bold text-orange-400">{result.summary.totalSins}</p>
-              </div>
-            </div>
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                           TAGLINE                               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="text-center mb-12">
+          <p className="text-base mb-2" style={{ color: '#e8e3e3' }}>
+            Get your code roasted. Learn something. Share the shame.
+          </p>
+          <p className="text-xs" style={{ color: '#6e6a86' }}>
+            // brutally honest feedback with adjustable savagery
+          </p>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                      SEVERITY SELECTOR                          */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="mb-10" style={{ color: '#e8e3e3' }}>
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// SELECT ROAST INTENSITY</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
           </div>
 
-          <div className="space-y-4">
-            {result.sins.map((sin, i) => (
-              <div key={i} className={`sin-card ${sin.severity} rounded-xl p-5`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${sin.severity === 'cardinal' ? 'bg-red-500/20 text-red-400' :
-                    sin.severity === 'mortal' ? 'bg-orange-500/20 text-orange-400' :
-                      'bg-yellow-500/20 text-yellow-400'
-                    }`}>{sin.severity.toUpperCase()}</span>
-                  <span className="text-sm text-gray-500">{sin.category}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            {severityLevels.map((sev, i) => (
+              <button
+                key={sev.label}
+                onClick={() => setSeverityIndex(i)}
+                className="text-left p-4 transition-all border"
+                style={{
+                  borderColor: severityIndex === i ? sev.color : '#6e6a86',
+                  backgroundColor: severityIndex === i ? `${sev.color}15` : 'transparent',
+                  color: severityIndex === i ? sev.color : '#6e6a86'
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span>{severityIndex === i ? '(*)' : '( )'}</span>
+                  <span className="font-bold">{sev.label}</span>
+                  <span style={{ color: sev.color }}>{sev.bar}</span>
                 </div>
-                <p className="text-white mb-4">{sin.description}</p>
-                {sin.codeSnippet && <pre className="bg-black/50 rounded-lg p-3 mb-4 font-mono text-sm text-gray-300 overflow-x-auto">{sin.codeSnippet}</pre>}
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-                  <p className="text-sm text-green-400"><span className="font-semibold">✨ Fix:</span> {sin.suggestion}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{sev.icon}</span>
+                  <span className="text-xs" style={{ color: '#6e6a86' }}>// {sev.desc}</span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
 
-          {result.redemption.praise.length > 0 && (
-            <div className="mt-8 bg-green-500/5 border border-green-500/20 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-green-400 mb-4">✓ What You Did Right</h3>
-              <ul className="space-y-2">{result.redemption.praise.map((p, i) => <li key={i} className="text-gray-300">• {p}</li>)}</ul>
-              <p className="text-gray-400 italic mt-4">{result.redemption.potential}</p>
-            </div>
-          )}
-        </section>
-      )}
-
-      <section id="pricing" className="max-w-4xl mx-auto px-4 mb-20">
-        <h2 className="text-3xl font-bold text-center mb-12">Pricing</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-[#141414] border border-[#262626] rounded-2xl p-8">
-            <h3 className="text-xl font-semibold mb-2">Free</h3>
-            <div className="text-4xl font-bold mb-6">$0</div>
-            <ul className="space-y-3 mb-8 text-gray-300">
-              <li>✓ 3 roasts per day</li>
-              <li>✓ Gentle & Honest modes</li>
-            </ul>
-            <button className="w-full py-3 border border-white/20 rounded-xl font-medium hover:bg-white/5">Get Started</button>
-          </div>
-          <div className="bg-gradient-to-b from-orange-500/10 to-transparent border border-orange-500/30 rounded-2xl p-8 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">FULL HEAT</div>
-            <h3 className="text-xl font-semibold mb-2">Pro</h3>
-            <div className="text-4xl font-bold mb-6">$12<span className="text-lg text-gray-400 font-normal">/mo</span></div>
-            <ul className="space-y-3 mb-8 text-gray-300">
-              <li>✓ Unlimited roasts</li>
-              <li>✓ All severity modes</li>
-              <li>✓ 💀 SAVAGE mode</li>
-              <li>✓ API access</li>
-            </ul>
-            <a
-              href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all"
-            >
-              Upgrade to Pro
-            </a>
+          <div className="text-xs" style={{ color: '#6e6a86' }}>
+            CURRENT: <span style={{ color: severityLevels[severityIndex].color }}>
+              {severityLevels[severityIndex].icon} {severityLevels[severityIndex].label}
+            </span>
           </div>
         </div>
-      </section>
 
-      <footer className="border-t border-white/10 py-8">
-        <div className="max-w-5xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Flame className="w-6 h-6 text-orange-500" />
-            <span className="font-bold">PRoast</span>
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                         CODE INPUT                              */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-xs" style={{ color: '#eb6f92' }}>// PASTE YOUR CODE</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#eb6f92' }}></div>
+            <span className="text-xs" style={{ color: '#6e6a86' }}>[-][x]</span>
           </div>
-          <p className="text-sm text-gray-500">© 2025 PRoast</p>
+
+          <div
+            className="p-6 border"
+            style={{ borderColor: '#eb6f92', backgroundColor: '#16161a' }}
+          >
+            <div className="flex items-start gap-3">
+              <span style={{ color: '#f2cdcd' }}>{'>'}</span>
+              <textarea
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+                placeholder="paste your code here... we promise not to judge too harshly"
+                rows={10}
+                className="flex-1 bg-transparent outline-none resize-none text-sm"
+                style={{
+                  color: '#e8e3e3',
+                  caretColor: '#f2cdcd',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                           BUTTONS                               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="flex flex-wrap gap-6 justify-center mb-12">
+          <button
+            onClick={handleRoast}
+            disabled={isLoading || !codeInput.trim()}
+            className="px-8 py-4 border-2 transition-all hover:translate-y-px disabled:opacity-50"
+            style={{
+              borderColor: severityLevels[severityIndex].color,
+              color: severityLevels[severityIndex].color,
+              backgroundColor: 'transparent'
+            }}
+          >
+            {isLoading ? '[~] ROASTING...' : '[>] ROAST MY CODE'}
+          </button>
+
+          <button
+            onClick={() => { setCodeInput(''); setRoastResult(null); setError(''); }}
+            className="px-8 py-4 border transition-all hover:translate-y-px"
+            style={{ borderColor: '#6e6a86', color: '#6e6a86' }}
+          >
+            [x] CLEAR
+          </button>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-8 p-6 border" style={{ borderColor: '#eb6f92', color: '#eb6f92' }}>
+            <span className="font-bold">[!] ERROR:</span> {error}
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                        ROAST RESULT                             */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        {(roastResult || isLoading) && (
+          <div className="mb-12 border-2 p-8" style={{ borderColor: '#eb6f92' }}>
+            <div className="text-center mb-6" style={{ color: '#eb6f92' }}>
+              <span className="text-lg font-bold">// ROAST RESULTS</span>
+            </div>
+
+            {isLoading ? (
+              <div className="text-center py-8" style={{ color: '#ffe9b0' }}>
+                <p>[~] Analyzing your code...</p>
+                <p>[~] Finding all the sins...</p>
+                <p>[~] Preparing brutal honesty...</p>
+              </div>
+            ) : roastResult && (
+              <div className="space-y-8">
+                <div className="text-center">
+                  <p className="text-xl font-bold mb-2" style={{ color: '#eb6f92' }}>
+                    {roastResult.summary.headline}
+                  </p>
+                  <p className="text-sm mb-4" style={{ color: '#a8b2c3' }}>
+                    {roastResult.summary.verdict}
+                  </p>
+                  <p className="text-xs" style={{ color: '#6e6a86' }}>
+                    RATING: {roastResult.summary.overallRating}/5 | SINS: {roastResult.summary.totalSins}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {roastResult.sins.map((sin, i) => (
+                    <div
+                      key={i}
+                      className="p-4 border-l-4"
+                      style={{
+                        borderColor: sin.severity === 'cardinal' ? '#eb6f92' : sin.severity === 'mortal' ? '#f5a97f' : '#ffe9b0',
+                        backgroundColor: '#16161a'
+                      }}
+                    >
+                      <p className="font-bold mb-2" style={{ color: sin.severity === 'cardinal' ? '#eb6f92' : sin.severity === 'mortal' ? '#f5a97f' : '#ffe9b0' }}>
+                        [!] {sin.category.toUpperCase()}
+                      </p>
+                      <p className="mb-3" style={{ color: '#e8e3e3' }}>{sin.description}</p>
+                      {sin.codeSnippet && (
+                        <pre className="p-3 mb-3 text-xs overflow-x-auto" style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}>
+                          {sin.codeSnippet}
+                        </pre>
+                      )}
+                      <p style={{ color: '#a8d8b9' }}>[/] FIX: {sin.suggestion}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {roastResult.redemption.praise.length > 0 && (
+                  <div className="p-4 border" style={{ borderColor: '#a8d8b9' }}>
+                    <p className="font-bold mb-3" style={{ color: '#a8d8b9' }}>[/] REDEMPTION</p>
+                    {roastResult.redemption.praise.map((p, i) => (
+                      <p key={i} className="mb-1" style={{ color: '#e8e3e3' }}>- {p}</p>
+                    ))}
+                    <p className="mt-3 italic text-xs" style={{ color: '#6e6a86' }}>{roastResult.redemption.potential}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-4 justify-center">
+                  <button onClick={copyRoast} className="text-xs hover:underline" style={{ color: '#f2cdcd' }}>
+                    [:] COPY ROAST
+                  </button>
+                  <button className="text-xs hover:underline" style={{ color: '#7eb8da' }}>
+                    [^] SHARE CARD
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                      SEVERITY EXAMPLES                          */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// SEVERITY EXAMPLES</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { level: ':) GENTLE', text: '"This variable name could be more descriptive for better readability."', color: '#a8d8b9' },
+              { level: ':| HONEST', text: '"Naming a variable x in a 200-line function is a code smell."', color: '#ffe9b0' },
+              { level: '>:( BRUTAL', text: '"Your variable naming suggests you\'re trying to hide evidence."', color: '#f5a97f' },
+              { level: 'X_X SAVAGE', text: '"I\'ve seen better naming conventions in minified JavaScript."', color: '#eb6f92' },
+            ].map((example, i) => (
+              <div
+                key={i}
+                className="p-6 border"
+                style={{ borderColor: example.color, color: example.color }}
+              >
+                <p className="font-bold mb-3">{example.level}</p>
+                <p className="text-sm" style={{ color: '#e8e3e3' }}>{example.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                          FEATURES                               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// FEATURES</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 border" style={{ borderColor: '#eb6f92' }}>
+              <p className="font-bold mb-3" style={{ color: '#eb6f92' }}>X_X SAVAGE MODE</p>
+              <p className="text-sm" style={{ color: '#e8e3e3' }}>
+                Gordon Ramsay-level feedback for devs who can handle the truth.
+              </p>
+            </div>
+
+            <div className="p-6 border" style={{ borderColor: '#a8d8b9' }}>
+              <p className="font-bold mb-3" style={{ color: '#a8d8b9' }}>[/] REAL FIXES</p>
+              <p className="text-sm" style={{ color: '#e8e3e3' }}>
+                Every roast includes actionable suggestions to actually fix it.
+              </p>
+            </div>
+
+            <div className="p-6 border" style={{ borderColor: '#7eb8da' }}>
+              <p className="font-bold mb-3" style={{ color: '#7eb8da' }}>[^] SHARE CARDS</p>
+              <p className="text-sm" style={{ color: '#e8e3e3' }}>
+                Generate shareable roast cards. Bond with devs through shame.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                          PRICING                                */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div id="pricing" className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// PRICING</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            {/* Free Tier */}
+            <div className="p-8 border" style={{ borderColor: '#6e6a86', color: '#a8b2c3' }}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="px-2 py-1 border text-xs" style={{ borderColor: '#6e6a86' }}>F</span>
+                <span className="font-bold">FREE</span>
+              </div>
+              <p className="text-2xl font-bold mb-6">$0<span className="text-sm font-normal">/forever</span></p>
+              <div className="space-y-2 mb-6 text-sm">
+                <p>[/] 3 roasts/day</p>
+                <p>[/] Gentle → Brutal</p>
+                <p>[/] Basic feedback</p>
+                <p style={{ color: '#6e6a86' }}>[x] Savage mode</p>
+                <p style={{ color: '#6e6a86' }}>[x] Share cards</p>
+              </div>
+              <div className="text-center py-2 border" style={{ borderColor: '#6e6a86' }}>
+                CURRENT PLAN
+              </div>
+            </div>
+
+            {/* Pro Tier */}
+            <div className="p-8 border-2" style={{ borderColor: '#eb6f92', color: '#eb6f92' }}>
+              <p className="text-xs text-center mb-4">* * * NO MERCY MODE * * *</p>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="px-2 py-1 border-2 text-xs font-bold" style={{ borderColor: '#eb6f92' }}>X_X</span>
+                <span className="font-bold">PRO</span>
+              </div>
+              <p className="text-2xl font-bold mb-6">$12<span className="text-sm font-normal">/month</span></p>
+              <div className="space-y-2 mb-6 text-sm" style={{ color: '#e8e3e3' }}>
+                <p>[/] Unlimited roasts</p>
+                <p>[/] All severity levels</p>
+                <p>[/] SAVAGE mode unlocked</p>
+                <p>[/] Shareable roast cards</p>
+                <p>[/] Roast history</p>
+              </div>
+              <a
+                href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all"
+                style={{ borderColor: '#eb6f92' }}
+              >
+                [&gt;] GET ROASTED
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/*                       SOCIAL PROOF                              */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// DEVELOPER TRAUMA</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
+          </div>
+
+          <div className="space-y-4" style={{ color: '#a8b2c3' }}>
+            <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
+              <p className="mb-2" style={{ color: '#e8e3e3' }}>
+                "PRoast said my error handling strategy was 'hope for the best'. It wasn't wrong."
+              </p>
+              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- @dev_anon</p>
+            </div>
+
+            <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
+              <p className="mb-2" style={{ color: '#e8e3e3' }}>
+                "I showed my coworkers my Savage mode results. Now they're all trying to get worse scores than me."
+              </p>
+              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- reddit user</p>
+            </div>
+
+            <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
+              <p className="mb-2" style={{ color: '#e8e3e3' }}>
+                "The roast was brutal but the fixes were actually helpful. 10/10 would get destroyed again."
+              </p>
+              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- HN commenter</p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
+      {/*                           FOOTER                                */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+
+      <footer className="border-t py-12" style={{ borderColor: '#6e6a86' }}>
+        <div className="max-w-5xl mx-auto px-6 text-center" style={{ color: '#6e6a86' }}>
+          <p className="mb-2">ROASTED WITH {'<3'} IN THE TERMINAL</p>
+          <p className="mb-4">(c) 2025 PROAST</p>
+          <a href="#pricing" className="text-xs hover:text-[#eb6f92] transition-colors">[PRICING]</a>
         </div>
       </footer>
-    </main>
+    </div>
   )
 }

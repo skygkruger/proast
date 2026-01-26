@@ -2,38 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+/* ════════════════════════════════════════════════════════════ */
+/*  PASTEL RETRO TERMINAL STYLES                                */
+/* ════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg-deep: #1a1a2e;
+  --bg-card: #16161a;
+  --text-primary: #e8e3e3;
+  --text-secondary: #a8b2c3;
+  --text-muted: #6e6a86;
+  --accent-cyan: #7eb8da;
+  --accent-mint: #a8d8b9;
+  --accent-lavender: #c4a7e7;
+  --accent-rose: #f2cdcd;
+  --accent-cream: #ffe9b0;
+  --accent-peach: #f5a97f;
+  --accent-coral: #eb6f92;
+}
 
 body {
-  font-family: 'Inter', sans-serif;
-  background: #0a0a0a;
-  color: #ffffff;
+  background-color: var(--bg-deep);
+  color: var(--text-secondary);
 }
 
-.font-mono {
-  font-family: 'JetBrains Mono', monospace;
+pre {
+  font-family: inherit;
+  margin: 0;
 }
 
-.fire-glow {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.4);
+::selection {
+  background-color: var(--accent-coral);
+  color: var(--bg-deep);
 }
 
-.fire-glow:hover {
-  box-shadow: 0 0 50px rgba(249, 115, 22, 0.6);
+::-webkit-scrollbar {
+  width: 8px;
 }
 
+::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+}
+
+*:focus-visible {
+  outline: 1px solid var(--accent-coral);
+  outline-offset: 2px;
+}
+
+/* Blinking cursor */
+.cursor {
+  animation: blink 1.06s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Sin card styles for retro theme */
 .sin-card {
-  background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
-  border-left: 4px solid #f97316;
+  background: var(--bg-card);
+  border-left: 3px solid var(--accent-coral);
 }
 
-.sin-card.venial { border-left-color: #eab308; }
-.sin-card.mortal { border-left-color: #f97316; }
-.sin-card.cardinal { border-left-color: #ef4444; }
-
-.flame-icon { color: #404040; transition: color 0.2s; }
-.flame-icon.active { color: #f97316; filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6)); }
-
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+.sin-card.venial { border-left-color: var(--accent-cream); }
+.sin-card.mortal { border-left-color: var(--accent-peach); }
+.sin-card.cardinal { border-left-color: var(--accent-coral); }

@@ -9,36 +9,33 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        fire: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
-        },
-        roast: {
-          bg: '#0a0a0a',
-          card: '#141414',
-          border: '#262626',
-          muted: '#737373',
-        }
+        // Backgrounds
+        'retro-deep': '#1a1a2e',
+        'retro-card': '#16161a',
+        'retro-hover': '#232336',
+        // Text
+        'retro-text': '#e8e3e3',
+        'retro-secondary': '#a8b2c3',
+        'retro-muted': '#6e6a86',
+        // Accents
+        'pastel-cyan': '#7eb8da',
+        'pastel-mint': '#a8d8b9',
+        'pastel-lavender': '#c4a7e7',
+        'pastel-rose': '#f2cdcd',
+        'pastel-cream': '#ffe9b0',
+        'pastel-peach': '#f5a97f',
+        'pastel-coral': '#eb6f92',
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
       },
       animation: {
-        'flame': 'flame 1.5s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'blink': 'blink 1.06s step-end infinite',
       },
       keyframes: {
-        flame: {
-          '0%, 100%': { transform: 'scaleY(1)' },
-          '50%': { transform: 'scaleY(1.1)' },
+        blink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
         }
       }
     },
