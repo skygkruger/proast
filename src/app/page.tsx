@@ -73,8 +73,8 @@ export default function PRoastRetro() {
           <div className="flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
             <Link href="/docs" className="hover:text-[#eb6f92] transition-colors">[DOCS]</Link>
             <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
-            <span>[GITHUB]</span>
-            <span>[@]</span>
+            <a href="https://github.com/skygkruger" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[GITHUB]</a>
+            <a href="https://x.com/run_veridian" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[@]</a>
           </div>
         </div>
       </header>
