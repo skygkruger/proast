@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
+// Use Node.js runtime for better compatibility with blob downloads
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,8 +23,14 @@ export async function POST(request: NextRequest) {
 
     const accentColor = severityColors[severity] || '#eb6f92'
 
-    // Generate the image
-    return new ImageResponse(
+    // Truncate headline if too long
+    const displayHeadline = headline.length > 80 ? headline.substring(0, 77) + '...' : headline
+
+    // Truncate topSin if too long
+    const displayTopSin = topSin && topSin.length > 100 ? topSin.substring(0, 97) + '...' : topSin
+
+    // Generate the image using ImageResponse
+    const imageResponse = new ImageResponse(
       (
         <div
           style={{
@@ -36,6 +43,7 @@ export async function POST(request: NextRequest) {
             backgroundColor: '#1a1a2e',
             fontFamily: 'monospace',
             padding: '60px',
+            position: 'relative',
           }}
         >
           <div
@@ -48,6 +56,7 @@ export async function POST(request: NextRequest) {
               padding: '40px 60px',
               width: '100%',
               height: '100%',
+              position: 'relative',
             }}
           >
             <div
@@ -64,22 +73,23 @@ export async function POST(request: NextRequest) {
 
             <div
               style={{
-                fontSize: '48px',
+                fontSize: '42px',
                 fontWeight: 'bold',
                 color: '#e8e3e3',
                 textAlign: 'center',
                 marginBottom: '30px',
                 maxWidth: '900px',
-                lineHeight: 1.2,
+                lineHeight: 1.3,
               }}
             >
-              &ldquo;{headline}&rdquo;
+              &quot;{displayHeadline}&quot;
             </div>
 
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '40px',
                 marginBottom: '30px',
               }}
@@ -117,30 +127,31 @@ export async function POST(request: NextRequest) {
               </div>
             </div>
 
-            {topSin && (
+            {displayTopSin && (
               <div
                 style={{
-                  fontSize: '24px',
+                  fontSize: '20px',
                   color: '#a8b2c3',
                   textAlign: 'center',
                   maxWidth: '800px',
                   borderTop: '2px solid #6e6a86',
                   paddingTop: '20px',
+                  marginTop: '10px',
                 }}
               >
-                Top sin: {topSin}
+                Top sin: {displayTopSin}
               </div>
             )}
 
             <div
               style={{
                 position: 'absolute',
-                bottom: '30px',
+                bottom: '20px',
                 fontSize: '18px',
                 color: '#6e6a86',
               }}
             >
-              Get roasted at proast.dev
+              Get roasted at proast.io
             </div>
           </div>
         </div>
@@ -150,6 +161,18 @@ export async function POST(request: NextRequest) {
         height: 630,
       }
     )
+
+    // Convert ImageResponse to array buffer and return as PNG
+    const buffer = await imageResponse.arrayBuffer()
+
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Content-Disposition': 'attachment; filename="proast-roast.png"',
+        'Cache-Control': 'no-store',
+      },
+    })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('Card generation error:', errorMessage)

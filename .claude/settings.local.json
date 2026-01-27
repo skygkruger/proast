@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd documentation page with sidebar navigation\n\n- Create /docs page with full PRoast documentation\n- Add sidebar with section navigation \\(Getting Started, Roast Levels,\n  Features, GitHub Integration, API Reference, FAQ\\)\n- Update main page header to link to /docs using Next.js Link\n- Style docs page to match main site theme\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run lint)"
+    ]
+  }
+}
