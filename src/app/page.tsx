@@ -778,30 +778,27 @@ export default function PRoastRetro() {
 
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-xs" style={{ color: '#6e6a86' }}>// DEVELOPER TRAUMA</span>
+            <span className="text-xs" style={{ color: '#6e6a86' }}>// OVERHEARD IN THE TERMINAL</span>
             <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
           </div>
 
           <div className="space-y-4" style={{ color: '#a8b2c3' }}>
             <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
-              <p className="mb-2" style={{ color: '#e8e3e3' }}>
-                "PRoast said my error handling strategy was 'hope for the best'. It wasn't wrong."
+              <p style={{ color: '#e8e3e3' }}>
+                "My error handling strategy was described as 'hope for the best'."
               </p>
-              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- @dev_anon</p>
             </div>
 
             <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
-              <p className="mb-2" style={{ color: '#e8e3e3' }}>
-                "I showed my coworkers my Savage mode results. Now they're all trying to get worse scores than me."
+              <p style={{ color: '#e8e3e3' }}>
+                "We now compete for the worst scores in Slack."
               </p>
-              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- reddit user</p>
             </div>
 
             <div className="p-6 border" style={{ borderColor: '#6e6a86' }}>
-              <p className="mb-2" style={{ color: '#e8e3e3' }}>
-                "The roast was brutal but the fixes were actually helpful. 10/10 would get destroyed again."
+              <p style={{ color: '#e8e3e3' }}>
+                "Brutal, but the fixes actually worked. 10/10 would get destroyed again."
               </p>
-              <p className="text-xs text-right" style={{ color: '#6e6a86' }}>- HN commenter</p>
             </div>
           </div>
         </div>
