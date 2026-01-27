@@ -16,6 +16,70 @@ const severityLevels = [
   { level: 'savage' as SeverityLevel, label: 'SAVAGE', icon: 'X_X', bar: '████', color: '#eb6f92', desc: 'gordon ramsay mode', pro: true },
 ]
 
+// Animated loading component
+function LoadingAnimation({ color }: { color: string }) {
+  const [frame, setFrame] = useState(0)
+  const spinnerFrames = ['◐', '◓', '◑', '◒']
+
+  const loadingSteps = [
+    { text: 'Analyzing your code', delay: 0 },
+    { text: 'Finding all the sins', delay: 1 },
+    { text: 'Preparing brutal honesty', delay: 2 },
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame(f => (f + 1) % spinnerFrames.length)
+    }, 150)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="py-8 space-y-4">
+      {loadingSteps.map((step, i) => (
+        <div key={i} className="flex items-center gap-4">
+          <span
+            className="text-lg font-mono transition-all"
+            style={{
+              color,
+              display: 'inline-block',
+              animation: 'spin 0.6s linear infinite',
+              animationDelay: `${i * 0.2}s`
+            }}
+          >
+            {spinnerFrames[(frame + i) % spinnerFrames.length]}
+          </span>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-1">
+              <span style={{ color }}>{step.text}...</span>
+            </div>
+            <div
+              className="h-1 rounded-full overflow-hidden"
+              style={{ backgroundColor: `${color}20` }}
+            >
+              <div
+                className="h-full rounded-full"
+                style={{
+                  backgroundColor: color,
+                  animation: `loadingBar 2s ease-in-out infinite`,
+                  animationDelay: `${step.delay * 0.5}s`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+      <style jsx>{`
+        @keyframes loadingBar {
+          0% { width: 0%; opacity: 0.5; }
+          50% { width: 100%; opacity: 1; }
+          100% { width: 100%; opacity: 0.3; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
 export default function PRoastRetro() {
   const [codeInput, setCodeInput] = useState('')
   const [roastResult, setRoastResult] = useState<RoastResult | null>(null)
@@ -307,11 +371,11 @@ export default function PRoastRetro() {
           </div>
 
           <div
-            className="p-6 border"
-            style={{ borderColor: '#eb6f92', backgroundColor: '#16161a' }}
+            className="p-6 border transition-colors duration-300"
+            style={{ borderColor: severityLevels[severityIndex].color, backgroundColor: '#16161a' }}
           >
             <div className="flex items-start gap-3">
-              <span style={{ color: '#f2cdcd' }}>{'>'}</span>
+              <span style={{ color: severityLevels[severityIndex].color }}>{'>'}</span>
               <textarea
                 value={codeInput}
                 onChange={(e) => setCodeInput(e.target.value.slice(0, 10000))}
@@ -320,7 +384,7 @@ export default function PRoastRetro() {
                 className="flex-1 bg-transparent outline-none resize-none text-sm"
                 style={{
                   color: '#e8e3e3',
-                  caretColor: '#f2cdcd',
+                  caretColor: severityLevels[severityIndex].color,
                 }}
               />
             </div>
@@ -380,11 +444,7 @@ export default function PRoastRetro() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8" style={{ color: severityLevels[severityIndex].color }}>
-                <p>[~] Analyzing your code...</p>
-                <p>[~] Finding all the sins...</p>
-                <p>[~] Preparing brutal honesty...</p>
-              </div>
+              <LoadingAnimation color={severityLevels[severityIndex].color} />
             ) : roastResult && (
               <div className="space-y-8">
                 <div className="text-center">
