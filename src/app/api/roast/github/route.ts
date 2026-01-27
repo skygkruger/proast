@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { createAdminClient, checkRateLimit, incrementUsage, getUserProfile } from '@/lib/supabase'
 import type { SeverityLevel } from '@/types/roast'
@@ -91,7 +91,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Require authentication for GitHub PR roasting
-    const supabase = createServerComponentClient({ cookies })
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
     const { data: { session } } = await supabase.auth.getSession()
 
     if (!session?.user) {

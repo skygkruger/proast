@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { SeverityLevel, RoastResult } from '@/types/roast'
+import type { User } from '@supabase/supabase-js'
 
 // ═══════════════════════════════════════════════════════════════
 //  PROAST - PASTEL RETRO TERMINAL REDESIGN
@@ -91,6 +94,25 @@ export default function PRoastRetro() {
   const [shareLoading, setShareLoading] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+
+  const router = useRouter()
+  const supabase = createClientComponentClient()
+
+  // Check auth state
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
 
   // Check URL params for checkout status
   useEffect(() => {
@@ -167,6 +189,12 @@ export default function PRoastRetro() {
   }
 
   const handleUpgrade = async (plan: 'pro' | 'team' = 'pro') => {
+    // Redirect to login if not authenticated
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+
     setCheckoutLoading(true)
     try {
       const response = await fetch('/api/stripe/create-checkout', {
@@ -178,8 +206,8 @@ export default function PRoastRetro() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          // User not authenticated - show error
-          setError('Please sign in to upgrade your plan')
+          // User not authenticated - redirect to login
+          router.push('/auth/login')
           return
         }
         throw new Error(data.error || 'Failed to create checkout')
@@ -194,6 +222,11 @@ export default function PRoastRetro() {
     } finally {
       setCheckoutLoading(false)
     }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.refresh()
   }
 
   const generateShareCard = async () => {
@@ -314,6 +347,11 @@ export default function PRoastRetro() {
             <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
             <a href="https://github.com/skygkruger" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[GITHUB]</a>
             <a href="https://x.com/run_veridian" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[@]</a>
+            {user ? (
+              <button onClick={handleLogout} className="hover:text-[#eb6f92] transition-colors">[LOGOUT]</button>
+            ) : (
+              <Link href="/auth/login" className="hover:text-[#eb6f92] transition-colors">[LOGIN]</Link>
+            )}
           </div>
         </div>
       </header>

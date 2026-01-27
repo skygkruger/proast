@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import type { SeverityLevel, RoastResult } from '@/types/roast'
 import { createAdminClient, checkRateLimit, incrementUsage, getUserProfile } from '@/lib/supabase'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 
 const anthropic = new Anthropic({
@@ -96,7 +96,8 @@ export async function POST(request: NextRequest) {
     let userPlan: 'free' | 'pro' | 'team' = 'free'
 
     try {
-      const supabase = createServerComponentClient({ cookies })
+      const cookieStore = cookies()
+      const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
       const { data: { session } } = await supabase.auth.getSession()
 
       if (session?.user) {
