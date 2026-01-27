@@ -89,16 +89,20 @@ export default function PRoastRetro() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   // Check URL params for checkout status
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('checkout') === 'success') {
-      // Could show a success message
+      setShowSuccessMessage('Welcome to PRO! Savage mode and unlimited roasts are now unlocked.')
+      setTimeout(() => setShowSuccessMessage(null), 8000)
       window.history.replaceState({}, '', '/')
     }
     if (params.get('github_connected') === 'true') {
-      // Could show a success message
+      setShowSuccessMessage('GitHub connected successfully! You can now roast PRs.')
+      setTimeout(() => setShowSuccessMessage(null), 5000)
       window.history.replaceState({}, '', '/')
     }
   }, [])
@@ -162,6 +166,36 @@ export default function PRoastRetro() {
     }
   }
 
+  const handleUpgrade = async (plan: 'pro' | 'team' = 'pro') => {
+    setCheckoutLoading(true)
+    try {
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // User not authenticated - show error
+          setError('Please sign in to upgrade your plan')
+          return
+        }
+        throw new Error(data.error || 'Failed to create checkout')
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (err) {
+      setError('Failed to start checkout. Please try again.')
+    } finally {
+      setCheckoutLoading(false)
+    }
+  }
+
   const generateShareCard = async () => {
     if (!roastResult) return
     setShareLoading(true)
@@ -210,6 +244,27 @@ export default function PRoastRetro() {
         color: '#a8b2c3'
       }}
     >
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-pulse">
+          <div
+            className="px-6 py-4 border-2 shadow-lg"
+            style={{ backgroundColor: '#1a1a2e', borderColor: '#a8d8b9', color: '#a8d8b9' }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">✓</span>
+              <span>{showSuccessMessage}</span>
+              <button
+                onClick={() => setShowSuccessMessage(null)}
+                className="ml-4 hover:opacity-70"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Upgrade Modal */}
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -227,15 +282,14 @@ export default function PRoastRetro() {
               Unlock Gordon Ramsay-level roasts, unlimited daily roasts, shareable cards, and roast history.
             </p>
             <div className="space-y-4">
-              <a
-                href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all"
+              <button
+                onClick={() => handleUpgrade('pro')}
+                disabled={checkoutLoading}
+                className="block w-full text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all disabled:opacity-50"
                 style={{ borderColor: '#eb6f92', color: '#eb6f92' }}
               >
-                [&gt;] UPGRADE TO PRO - $12/mo
-              </a>
+                {checkoutLoading ? '[~] LOADING...' : '[>] UPGRADE TO PRO - $12/mo'}
+              </button>
               <button
                 onClick={() => setShowUpgradeModal(false)}
                 className="block w-full text-center py-3 border transition-all"
@@ -608,9 +662,9 @@ export default function PRoastRetro() {
             <div className="flex-1 h-px" style={{ backgroundColor: '#6e6a86' }}></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Free Tier */}
-            <div className="p-8 border" style={{ borderColor: '#6e6a86', color: '#a8b2c3' }}>
+            <div className="p-6 border" style={{ borderColor: '#6e6a86', color: '#a8b2c3' }}>
               <div className="flex items-center gap-3 mb-4">
                 <span className="px-2 py-1 border text-xs" style={{ borderColor: '#6e6a86' }}>F</span>
                 <span className="font-bold">FREE</span>
@@ -629,7 +683,7 @@ export default function PRoastRetro() {
             </div>
 
             {/* Pro Tier */}
-            <div className="p-8 border-2" style={{ borderColor: '#eb6f92', color: '#eb6f92' }}>
+            <div className="p-6 border-2" style={{ borderColor: '#eb6f92', color: '#eb6f92' }}>
               <p className="text-xs text-center mb-4">* * * NO MERCY MODE * * *</p>
               <div className="flex items-center gap-3 mb-4">
                 <span className="px-2 py-1 border-2 text-xs font-bold" style={{ borderColor: '#eb6f92' }}>X_X</span>
@@ -643,15 +697,39 @@ export default function PRoastRetro() {
                 <p>[/] Shareable roast cards</p>
                 <p>[/] Roast history</p>
               </div>
-              <a
-                href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all"
+              <button
+                onClick={() => handleUpgrade('pro')}
+                disabled={checkoutLoading}
+                className="w-full text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all disabled:opacity-50"
                 style={{ borderColor: '#eb6f92' }}
               >
-                [&gt;] GET ROASTED
-              </a>
+                {checkoutLoading ? '[~] LOADING...' : '[>] GET ROASTED'}
+              </button>
+            </div>
+
+            {/* Team Tier */}
+            <div className="p-6 border-2" style={{ borderColor: '#c4a7e7', color: '#c4a7e7' }}>
+              <p className="text-xs text-center mb-4">* * * TEAM DESTRUCTION * * *</p>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="px-2 py-1 border-2 text-xs font-bold" style={{ borderColor: '#c4a7e7' }}>{'{}'}</span>
+                <span className="font-bold">TEAM</span>
+              </div>
+              <p className="text-2xl font-bold mb-6">$49<span className="text-sm font-normal">/month</span></p>
+              <div className="space-y-2 mb-6 text-sm" style={{ color: '#e8e3e3' }}>
+                <p>[/] Unlimited roasts</p>
+                <p>[/] All PRO features</p>
+                <p>[/] Up to 10 team members</p>
+                <p>[/] Team roast leaderboard</p>
+                <p>[/] Priority support</p>
+              </div>
+              <button
+                onClick={() => handleUpgrade('team')}
+                disabled={checkoutLoading}
+                className="w-full text-center py-3 border-2 font-bold hover:bg-[#c4a7e7] hover:text-[#1a1a2e] transition-all disabled:opacity-50"
+                style={{ borderColor: '#c4a7e7' }}
+              >
+                {checkoutLoading ? '[~] LOADING...' : '[>] TEAM UP'}
+              </button>
             </div>
           </div>
         </div>
