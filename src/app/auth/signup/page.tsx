@@ -65,21 +65,21 @@ export default function SignUpPage() {
 
   return (
     <div
-      className="min-h-screen font-mono text-sm flex items-center justify-center px-4"
+      className="min-h-screen font-mono text-sm flex items-center justify-center px-4 py-8"
       style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}
     >
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md sm:max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold tracking-wider" style={{ color: '#eb6f92' }}>
+        <div className="text-center mb-6 sm:mb-8">
+          <Link href="/" className="text-xl sm:text-2xl font-bold tracking-wider" style={{ color: '#eb6f92' }}>
             PROAST
           </Link>
-          <p className="mt-2" style={{ color: '#6e6a86' }}>// CREATE YOUR ACCOUNT</p>
+          <p className="mt-2 text-xs sm:text-sm" style={{ color: '#6e6a86' }}>// CREATE YOUR ACCOUNT</p>
         </div>
 
         {/* Sign Up Box */}
-        <div className="border-2 p-8" style={{ borderColor: '#a8d8b9' }}>
-          <h1 className="text-xl font-bold mb-6 text-center" style={{ color: '#e8e3e3' }}>
+        <div className="border-2 p-5 sm:p-8" style={{ borderColor: '#a8d8b9' }}>
+          <h1 className="text-lg sm:text-xl font-bold mb-5 sm:mb-6 text-center" style={{ color: '#e8e3e3' }}>
             [+] SIGN UP
           </h1>
 

@@ -71,21 +71,21 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen font-mono text-sm flex items-center justify-center px-4"
+      className="min-h-screen font-mono text-sm flex items-center justify-center px-4 py-8"
       style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}
     >
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md sm:max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold tracking-wider" style={{ color: '#eb6f92' }}>
+        <div className="text-center mb-6 sm:mb-8">
+          <Link href="/" className="text-xl sm:text-2xl font-bold tracking-wider" style={{ color: '#eb6f92' }}>
             PROAST
           </Link>
-          <p className="mt-2" style={{ color: '#6e6a86' }}>// AUTHENTICATION REQUIRED</p>
+          <p className="mt-2 text-xs sm:text-sm" style={{ color: '#6e6a86' }}>// AUTHENTICATION REQUIRED</p>
         </div>
 
         {/* Login Box */}
-        <div className="border-2 p-8" style={{ borderColor: '#eb6f92' }}>
-          <h1 className="text-xl font-bold mb-6 text-center" style={{ color: '#e8e3e3' }}>
+        <div className="border-2 p-5 sm:p-8" style={{ borderColor: '#eb6f92' }}>
+          <h1 className="text-lg sm:text-xl font-bold mb-5 sm:mb-6 text-center" style={{ color: '#e8e3e3' }}>
             [&gt;] LOGIN
           </h1>
 
@@ -102,11 +102,11 @@ export default function LoginPage() {
           )}
 
           {/* Mode Toggle */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
             <button
               type="button"
               onClick={() => setMode('password')}
-              className="flex-1 py-2 border text-xs transition-all"
+              className="flex-1 py-2.5 border text-xs transition-all"
               style={{
                 borderColor: mode === 'password' ? '#eb6f92' : '#6e6a86',
                 color: mode === 'password' ? '#eb6f92' : '#6e6a86',
@@ -118,7 +118,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setMode('magic')}
-              className="flex-1 py-2 border text-xs transition-all"
+              className="flex-1 py-2.5 border text-xs transition-all"
               style={{
                 borderColor: mode === 'magic' ? '#eb6f92' : '#6e6a86',
                 color: mode === 'magic' ? '#eb6f92' : '#6e6a86',

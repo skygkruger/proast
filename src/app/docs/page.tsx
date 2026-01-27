@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 const colors = {
@@ -61,22 +61,22 @@ const CodeBlock = ({ children, title }: CodeBlockProps) => (
   }}>
     {title && (
       <div style={{
-        padding: '8px 12px',
+        padding: '6px 10px',
         borderBottom: `1px solid ${colors.muted}`,
         color: colors.muted,
-        fontSize: '12px',
+        fontSize: '11px',
       }}>
         {title}
       </div>
     )}
-    <pre style={{
+    <pre className="text-[11px] sm:text-[13px]" style={{
       margin: 0,
-      padding: '12px',
+      padding: '10px',
       color: colors.coral,
-      fontSize: '13px',
       lineHeight: '1.5',
       overflow: 'auto',
       whiteSpace: 'pre-wrap',
+      wordBreak: 'break-word',
     }}>
       {children}
     </pre>
@@ -106,35 +106,56 @@ const RoastLevelBadge = ({ level, icon, color }: RoastLevelBadgeProps) => (
 
 export default function PRoastDocs() {
   const [activeSection, setActiveSection] = useState('getting-started')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setSidebarOpen(false)
+      }
+    }
+    if (sidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [sidebarOpen])
+
+  // Close sidebar when section is selected on mobile
+  const handleSectionSelect = (sectionId: string) => {
+    setActiveSection(sectionId)
+    setSidebarOpen(false)
+  }
 
   const renderContent = () => {
     switch (activeSection) {
       case 'getting-started':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ Getting Started ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ Getting Started ─┐</h2>
 
-            <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
               PRoast is a brutally honest AI code reviewer. Paste your code or connect
               a GitHub PR, select your pain tolerance, and receive feedback that
               actually helps you improve.
             </p>
 
-            <h3 style={{ color: colors.mint }}>How It Works</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>How It Works</h3>
 
-            <div style={{
+            <div className="text-xs sm:text-sm" style={{
               background: colors.bgLight,
               border: `1px solid ${colors.muted}`,
-              padding: '16px',
+              padding: '12px',
               marginBottom: '16px',
             }}>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[1]</span> Paste code or enter a GitHub PR URL
               </div>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[2]</span> Choose your roast level (Gentle to Savage)
               </div>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[3]</span> Get detailed feedback with actual fixes
               </div>
               <div style={{ color: colors.text }}>
@@ -142,7 +163,7 @@ export default function PRoastDocs() {
               </div>
             </div>
 
-            <h3 style={{ color: colors.mint }}>Quick Example</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Quick Example</h3>
 
             <CodeBlock title="input: awful_code.js">
 {`function getData(x) {
@@ -182,19 +203,14 @@ const getLastValidItem = (items: unknown[]): unknown =>
 
             <h3 style={{ color: colors.mint }}>Supported Languages</h3>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '8px',
-              marginBottom: '16px',
-            }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" style={{ marginBottom: '16px' }}>
               {['JavaScript', 'TypeScript', 'Python', 'Go', 'Rust', 'Java', 'C#', 'Ruby', 'PHP'].map(lang => (
                 <div key={lang} style={{
                   background: colors.bgLight,
                   border: `1px solid ${colors.muted}`,
-                  padding: '8px 12px',
+                  padding: '6px 10px',
                   color: colors.text,
-                  fontSize: '13px',
+                  fontSize: '12px',
                 }}>
                   [+] {lang}
                 </div>
@@ -206,17 +222,17 @@ const getLastValidItem = (items: unknown[]): unknown =>
       case 'roast-levels':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ Roast Levels ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ Roast Levels ─┐</h2>
 
-            <p style={{ color: colors.muted, marginBottom: '24px' }}>
+            <p className="text-xs sm:text-sm" style={{ color: colors.muted, marginBottom: '20px' }}>
               Choose your pain tolerance. Each level adjusts the tone while keeping feedback actionable.
             </p>
 
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <RoastLevelBadge level="GENTLE" icon=":)" color={colors.mint} />
               </div>
-              <p style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
                 Constructive and encouraging. Perfect for junior devs or when you need your ego intact.
               </p>
               <CodeBlock>
@@ -226,11 +242,11 @@ future maintainers understand the code better."`}
               </CodeBlock>
             </div>
 
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <RoastLevelBadge level="HONEST" icon=":|" color={colors.cream} />
               </div>
-              <p style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
                 Direct and clear. No sugarcoating, but no unnecessary heat either.
               </p>
               <CodeBlock>
@@ -240,11 +256,11 @@ inefficient and there's a built-in method for this."`}
               </CodeBlock>
             </div>
 
-            <div style={{ marginBottom: '32px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <RoastLevelBadge level="BRUTAL" icon=">:(" color="#f5a97f" />
               </div>
-              <p style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
                 Harsh but fair. You asked for it.
               </p>
               <CodeBlock>
@@ -254,17 +270,17 @@ in 2024? What's next, jQuery?"`}
               </CodeBlock>
             </div>
 
-            <div style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
                 <RoastLevelBadge level="SAVAGE" icon="X_X" color={colors.coral} />
                 <span style={{
                   color: colors.bgLight,
                   background: colors.lavender,
                   padding: '2px 8px',
-                  fontSize: '11px',
+                  fontSize: '10px',
                 }}>PRO</span>
               </div>
-              <p style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7', marginBottom: '8px' }}>
                 Maximum devastation. Not for the faint of heart. Only available to Pro users who have proven they can handle it.
               </p>
               <CodeBlock>
@@ -278,13 +294,13 @@ code is optimized for is job security through obscurity."`}
             <div style={{
               background: colors.bgLight,
               border: `1px solid ${colors.coral}`,
-              padding: '16px',
-              marginTop: '24px',
+              padding: '12px',
+              marginTop: '20px',
             }}>
-              <div style={{ color: colors.coral, marginBottom: '8px' }}>
+              <div className="text-xs sm:text-sm" style={{ color: colors.coral, marginBottom: '8px' }}>
                 [!] Important Note
               </div>
-              <div style={{ color: colors.text, lineHeight: '1.6' }}>
+              <div className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.6' }}>
                 Every roast, regardless of level, includes actionable fixes and explanations.
                 The goal is to make you a better developer, not just to roast you.
               </div>
@@ -295,11 +311,11 @@ code is optimized for is job security through obscurity."`}
       case 'features':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ Features ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ Features ─┐</h2>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[&gt;] Code Analysis</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[&gt;] Code Analysis</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 PRoast analyzes your code for:
               </p>
               <CodeBlock>
@@ -314,9 +330,9 @@ code is optimized for is job security through obscurity."`}
               </CodeBlock>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[&gt;] Shareable Roast Cards</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[&gt;] Shareable Roast Cards</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Generate beautiful roast summary cards to share on Twitter, LinkedIn,
                 or your team Slack. Show the world your worst code and the lessons learned.
               </p>
@@ -329,60 +345,60 @@ code is optimized for is job security through obscurity."`}
               }}>
                 <div style={{
                   border: `2px solid ${colors.coral}`,
-                  padding: '16px',
+                  padding: '12px',
                   display: 'inline-block',
                 }}>
-                  <div style={{ color: colors.coral, fontSize: '18px', marginBottom: '8px' }}>
+                  <div className="text-sm sm:text-lg" style={{ color: colors.coral, marginBottom: '6px' }}>
                     CODE ROAST RESULTS
                   </div>
-                  <div style={{ color: colors.muted, fontSize: '24px', marginBottom: '4px' }}>
+                  <div className="text-lg sm:text-2xl" style={{ color: colors.muted, marginBottom: '4px' }}>
                     SCORE: 23/100
                   </div>
-                  <div style={{ color: colors.text, fontSize: '12px' }}>
+                  <div className="text-[10px] sm:text-xs" style={{ color: colors.text }}>
                     &quot;Certified Dumpster Fire&quot;
                   </div>
-                  <div style={{ color: colors.muted, fontSize: '10px', marginTop: '12px' }}>
+                  <div style={{ color: colors.muted, fontSize: '10px', marginTop: '10px' }}>
                     proast.dev
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[&gt;] Actual Fixes</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[&gt;] Actual Fixes</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Every issue identified comes with a working fix. No vague suggestions -
                 actual code you can copy and use.
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="flex flex-wrap items-center gap-2 text-sm sm:text-base" style={{ color: colors.mint }}>
                 [&gt;] Roast History
                 <span style={{
                   color: colors.bgLight,
                   background: colors.lavender,
                   padding: '2px 8px',
-                  fontSize: '11px',
+                  fontSize: '10px',
                 }}>PRO</span>
               </h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Track your improvement over time. See your roast scores trend upward
                 (hopefully) as you become a better developer.
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="flex flex-wrap items-center gap-2 text-sm sm:text-base" style={{ color: colors.mint }}>
                 [&gt;] Team Leaderboard
                 <span style={{
                   color: colors.bgLight,
                   background: colors.lavender,
                   padding: '2px 8px',
-                  fontSize: '11px',
+                  fontSize: '10px',
                 }}>TEAM</span>
               </h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Compete with your team for the highest code quality scores.
                 Or expose who writes the worst code. Your choice.
               </p>
@@ -393,30 +409,30 @@ code is optimized for is job security through obscurity."`}
       case 'github':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ GitHub Integration ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ GitHub Integration ─┐</h2>
 
-            <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
               Connect PRoast directly to your GitHub pull requests for automated code reviews.
             </p>
 
-            <h3 style={{ color: colors.mint }}>Connecting a PR</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Connecting a PR</h3>
 
-            <div style={{
+            <div className="text-xs sm:text-sm" style={{
               background: colors.bgLight,
               border: `1px solid ${colors.muted}`,
-              padding: '16px',
+              padding: '12px',
               marginBottom: '16px',
             }}>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[1]</span> Copy your GitHub PR URL
               </div>
               <CodeBlock>
 {`https://github.com/username/repo/pull/123`}
               </CodeBlock>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[2]</span> Paste into PRoast
               </div>
-              <div style={{ color: colors.text, marginBottom: '12px' }}>
+              <div style={{ color: colors.text, marginBottom: '10px' }}>
                 <span style={{ color: colors.coral }}>[3]</span> Authorize GitHub access (first time only)
               </div>
               <div style={{ color: colors.text }}>
@@ -424,7 +440,7 @@ code is optimized for is job security through obscurity."`}
               </div>
             </div>
 
-            <h3 style={{ color: colors.mint }}>What Gets Analyzed</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>What Gets Analyzed</h3>
 
             <CodeBlock>
 {`- All added lines in the PR
@@ -435,17 +451,17 @@ code is optimized for is job security through obscurity."`}
 - Commit message quality (bonus roast)`}
             </CodeBlock>
 
-            <h3 style={{ color: colors.mint, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="flex flex-wrap items-center gap-2 text-sm sm:text-base" style={{ color: colors.mint }}>
               GitHub App
               <span style={{
                 color: colors.bgLight,
                 background: colors.lavender,
                 padding: '2px 8px',
-                fontSize: '11px',
+                fontSize: '10px',
               }}>TEAM</span>
             </h3>
 
-            <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
               Install the PRoast GitHub App to automatically roast every PR in your repo:
             </p>
 
@@ -460,13 +476,13 @@ code is optimized for is job security through obscurity."`}
             <div style={{
               background: colors.bgLight,
               border: `1px solid ${colors.mint}`,
-              padding: '16px',
-              marginTop: '24px',
+              padding: '12px',
+              marginTop: '20px',
             }}>
-              <div style={{ color: colors.mint, marginBottom: '8px' }}>
+              <div className="text-xs sm:text-sm" style={{ color: colors.mint, marginBottom: '8px' }}>
                 [i] Privacy Note
               </div>
-              <div style={{ color: colors.text, lineHeight: '1.6' }}>
+              <div className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.6' }}>
                 PRoast only accesses the specific PR you submit. We don&apos;t store your code
                 after analysis. GitHub tokens are encrypted and can be revoked anytime.
               </div>
@@ -477,34 +493,31 @@ code is optimized for is job security through obscurity."`}
       case 'api':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ API Reference ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ API Reference ─┐</h2>
 
-            <div style={{
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm" style={{
               background: colors.bgLight,
               border: `1px solid ${colors.lavender}`,
-              padding: '12px 16px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
+              padding: '10px 12px',
+              marginBottom: '20px',
             }}>
               <span style={{
                 color: colors.bgLight,
                 background: colors.lavender,
                 padding: '2px 8px',
-                fontSize: '11px',
+                fontSize: '10px',
               }}>PRO</span>
               <span style={{ color: colors.text }}>
                 API access requires a Pro or Team subscription
               </span>
             </div>
 
-            <h3 style={{ color: colors.mint }}>Authentication</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Authentication</h3>
             <CodeBlock title="header">
 {`Authorization: Bearer YOUR_API_KEY`}
             </CodeBlock>
 
-            <h3 style={{ color: colors.mint }}>Roast Code</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Roast Code</h3>
             <CodeBlock title="POST /api/v1/roast">
 {`Request:
 {
@@ -533,7 +546,7 @@ Response:
 }`}
             </CodeBlock>
 
-            <h3 style={{ color: colors.mint }}>Roast GitHub PR</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Roast GitHub PR</h3>
             <CodeBlock title="POST /api/v1/roast/github">
 {`Request:
 {
@@ -558,7 +571,7 @@ Response:
 }`}
             </CodeBlock>
 
-            <h3 style={{ color: colors.mint }}>Generate Roast Card</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Generate Roast Card</h3>
             <CodeBlock title="POST /api/v1/card">
 {`Request:
 {
@@ -575,18 +588,13 @@ Response:
 }`}
             </CodeBlock>
 
-            <h3 style={{ color: colors.mint }}>Rate Limits</h3>
+            <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>Rate Limits</h3>
             <div style={{
               background: colors.bgLight,
               border: `1px solid ${colors.muted}`,
-              padding: '16px',
+              padding: '12px',
             }}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '8px',
-                color: colors.text,
-              }}>
+              <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm" style={{ color: colors.text }}>
                 <div>Free tier:</div>
                 <div style={{ color: colors.muted }}>3 roasts/day</div>
                 <div>Pro tier:</div>
@@ -601,46 +609,46 @@ Response:
       case 'faq':
         return (
           <div>
-            <h2 style={{ color: colors.coral, marginTop: 0 }}>┌─ FAQ ─┐</h2>
+            <h2 className="text-base sm:text-lg" style={{ color: colors.coral, marginTop: 0 }}>┌─ FAQ ─┐</h2>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] Is the roasting actually helpful?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] Is the roasting actually helpful?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Yes. Every roast includes actionable fixes and explanations. The humor
                 is just the delivery mechanism for real code review feedback that will
                 make you a better developer.
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] Why would I want my code roasted?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] Why would I want my code roasted?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Traditional code review is dry and often ignored. PRoast makes feedback
                 memorable. You&apos;ll remember &quot;this loop looks like it was written during
                 a fever dream&quot; longer than &quot;consider optimizing this loop.&quot;
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] Is my code stored?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] Is my code stored?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Code is processed in memory and deleted immediately after analysis.
                 We only store the roast results and metadata if you choose to save
                 them to your history (Pro feature).
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] Can I use PRoast for code I don&apos;t own?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] Can I use PRoast for code I don&apos;t own?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 You can roast any code you have legal access to. Please don&apos;t use
                 PRoast to publicly shame other developers without their consent.
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] How is the score calculated?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] How is the score calculated?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Scores are based on:
               </p>
               <CodeBlock>
@@ -654,27 +662,27 @@ Response:
               </CodeBlock>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] Can I disable the roasting and just get feedback?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] Can I disable the roasting and just get feedback?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Set roast level to &quot;Gentle&quot; for constructive, encouraging feedback
                 without the burns. It&apos;s still honest, just nicer about it.
               </p>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: colors.mint }}>[?] How do I unlock Savage mode?</h3>
-              <p style={{ color: colors.text, lineHeight: '1.7' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 className="text-sm sm:text-base" style={{ color: colors.mint }}>[?] How do I unlock Savage mode?</h3>
+              <p className="text-xs sm:text-sm" style={{ color: colors.text, lineHeight: '1.7' }}>
                 Savage mode is available to Pro subscribers. We gate it because
                 it&apos;s genuinely harsh and we want to make sure you&apos;re ready for it.
               </p>
             </div>
 
-            <div style={{
+            <div className="text-xs sm:text-sm" style={{
               background: colors.bgLight,
               border: `1px solid ${colors.muted}`,
-              padding: '16px',
-              marginTop: '32px',
+              padding: '12px',
+              marginTop: '24px',
             }}>
               <div style={{ color: colors.muted, marginBottom: '8px' }}>
                 Still have questions?
@@ -700,51 +708,77 @@ Response:
       color: colors.text,
     }}>
       {/* Header */}
-      <header style={{
+      <header className="flex justify-between items-center px-4 py-3" style={{
         borderBottom: `1px solid ${colors.muted}`,
-        padding: '16px 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ color: colors.coral, fontSize: '18px' }}>PRoast</span>
-          <span style={{ color: colors.muted }}>|</span>
-          <span style={{ color: colors.muted }}>Documentation</span>
+        <div className="flex items-center gap-3">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden"
+            style={{ color: colors.muted, fontSize: '14px', background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? '[X]' : '[=]'}
+          </button>
+          <Link href="/" style={{ color: colors.coral, fontSize: '16px', textDecoration: 'none' }}>PRoast</Link>
+          <span className="hidden md:inline" style={{ color: colors.muted }}>|</span>
+          <span className="hidden md:inline" style={{ color: colors.muted, fontSize: '14px' }}>Docs</span>
         </div>
-        <nav style={{ display: 'flex', gap: '24px' }}>
+        {/* Desktop nav */}
+        <nav className="hidden md:flex gap-4" style={{ fontSize: '14px' }}>
           <Link href="/" style={{ color: colors.muted, textDecoration: 'none' }}>[~] Home</Link>
           <span style={{ color: colors.coral }}>[?] Docs</span>
           <Link href="/#pricing" style={{ color: colors.muted, textDecoration: 'none' }}>[$] Pricing</Link>
         </nav>
+        {/* Mobile: just show Home link */}
+        <Link href="/" className="md:hidden" style={{ color: colors.muted, textDecoration: 'none', fontSize: '12px' }}>[~] Home</Link>
       </header>
 
       <div style={{ display: 'flex', position: 'relative' }}>
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <aside style={{
-          width: '260px',
-          minWidth: '260px',
-          flexShrink: 0,
-          borderRight: `1px solid ${colors.muted}`,
-          padding: '24px',
-          minHeight: 'calc(100vh - 60px)',
-          overflow: 'hidden',
-        }}>
+        <aside
+          ref={sidebarRef}
+          className={`
+            fixed md:relative z-50 md:z-auto
+            transform transition-transform duration-200 ease-in-out
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          `}
+          style={{
+            width: '260px',
+            minWidth: '260px',
+            flexShrink: 0,
+            borderRight: `1px solid ${colors.muted}`,
+            padding: '20px 16px',
+            minHeight: 'calc(100vh - 52px)',
+            overflow: 'auto',
+            background: colors.bg,
+            top: '52px',
+            left: 0,
+          }}>
           <Logo />
 
-          <div style={{ marginTop: '32px' }}>
-            <div style={{ color: colors.muted, fontSize: '12px', marginBottom: '16px' }}>
+          <div style={{ marginTop: '24px' }}>
+            <div style={{ color: colors.muted, fontSize: '11px', marginBottom: '12px' }}>
               DOCUMENTATION
             </div>
 
             {sections.map(section => (
               <button
                 key={section.id}
-                onClick={() => setActiveSection(section.id)}
+                onClick={() => handleSectionSelect(section.id)}
                 style={{
                   display: 'block',
                   width: '100%',
-                  padding: '10px 12px',
+                  padding: '8px 10px',
                   marginBottom: '4px',
                   background: activeSection === section.id ? colors.bgLight : 'transparent',
                   border: activeSection === section.id ? `1px solid ${colors.coral}` : '1px solid transparent',
@@ -752,7 +786,7 @@ Response:
                   textAlign: 'left' as const,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  fontSize: '14px',
+                  fontSize: '13px',
                 }}
               >
                 {section.label}
@@ -760,16 +794,16 @@ Response:
             ))}
           </div>
 
-          <div style={{
-            marginTop: '32px',
-            padding: '16px',
+          <div className="hidden md:block" style={{
+            marginTop: '24px',
+            padding: '12px',
             background: colors.bgLight,
             border: `1px solid ${colors.muted}`,
           }}>
-            <div style={{ color: colors.coral, marginBottom: '8px', fontSize: '13px' }}>
+            <div style={{ color: colors.coral, marginBottom: '8px', fontSize: '12px' }}>
               [!] Warning
             </div>
-            <div style={{ color: colors.muted, fontSize: '12px', lineHeight: '1.5' }}>
+            <div style={{ color: colors.muted, fontSize: '11px', lineHeight: '1.5' }}>
               Savage mode has been known to cause existential crises in
               senior developers. Proceed with caution.
             </div>
@@ -777,28 +811,22 @@ Response:
         </aside>
 
         {/* Main Content Wrapper */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', overflow: 'auto' }}>
-          <main style={{
-            width: '100%',
-            maxWidth: '800px',
-            padding: '32px 48px',
-          }}>
+        <div className="flex-1 flex justify-center overflow-auto">
+          <main className="w-full max-w-[800px] px-4 py-6 sm:px-8 sm:py-8 md:px-12">
             {renderContent()}
           </main>
         </div>
       </div>
 
       {/* Footer */}
-      <footer style={{
+      <footer className="flex flex-col sm:flex-row justify-between items-center gap-2" style={{
         borderTop: `1px solid ${colors.muted}`,
-        padding: '16px 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
+        padding: '12px 16px',
         color: colors.muted,
-        fontSize: '12px',
+        fontSize: '11px',
       }}>
         <span>PRoast v1.0.0</span>
-        <span>Your code is bad and we&apos;ll tell you why</span>
+        <span className="text-center">Your code is bad and we&apos;ll tell you why</span>
       </footer>
     </div>
   )
