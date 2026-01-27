@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { SeverityLevel, RoastResult } from '@/types/roast'
 
@@ -10,10 +10,10 @@ import type { SeverityLevel, RoastResult } from '@/types/roast'
 // ═══════════════════════════════════════════════════════════════
 
 const severityLevels = [
-  { level: 'gentle' as SeverityLevel, label: 'GENTLE', icon: ':)', bar: '░░░░', color: '#a8d8b9', desc: 'kind mentor' },
-  { level: 'honest' as SeverityLevel, label: 'HONEST', icon: ':|', bar: '▒▒░░', color: '#ffe9b0', desc: 'straight shooter' },
-  { level: 'brutal' as SeverityLevel, label: 'BRUTAL', icon: '>:(', bar: '▓▓▒░', color: '#f5a97f', desc: 'no sugar coating' },
-  { level: 'savage' as SeverityLevel, label: 'SAVAGE', icon: 'X_X', bar: '████', color: '#eb6f92', desc: 'gordon ramsay mode' },
+  { level: 'gentle' as SeverityLevel, label: 'GENTLE', icon: ':)', bar: '░░░░', color: '#a8d8b9', desc: 'kind mentor', pro: false },
+  { level: 'honest' as SeverityLevel, label: 'HONEST', icon: ':|', bar: '▒▒░░', color: '#ffe9b0', desc: 'straight shooter', pro: false },
+  { level: 'brutal' as SeverityLevel, label: 'BRUTAL', icon: '>:(', bar: '▓▓▒░', color: '#f5a97f', desc: 'no sugar coating', pro: false },
+  { level: 'savage' as SeverityLevel, label: 'SAVAGE', icon: 'X_X', bar: '████', color: '#eb6f92', desc: 'gordon ramsay mode', pro: true },
 ]
 
 export default function PRoastRetro() {
@@ -22,6 +22,32 @@ export default function PRoastRetro() {
   const [severityIndex, setSeverityIndex] = useState(0) // Default to GENTLE
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(false)
+  const [shareLoading, setShareLoading] = useState(false)
+
+  // Check URL params for checkout status
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('checkout') === 'success') {
+      // Could show a success message
+      window.history.replaceState({}, '', '/')
+    }
+    if (params.get('github_connected') === 'true') {
+      // Could show a success message
+      window.history.replaceState({}, '', '/')
+    }
+  }, [])
+
+  const handleSeveritySelect = (index: number) => {
+    const selected = severityLevels[index]
+    if (selected.pro) {
+      // Show upgrade prompt for savage mode
+      setShowUpgradeModal(true)
+      return
+    }
+    setSeverityIndex(index)
+  }
 
   const handleRoast = async () => {
     if (!codeInput.trim()) return
@@ -39,7 +65,18 @@ export default function PRoastRetro() {
         }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to roast')
+
+      if (!response.ok) {
+        // Handle specific error cases
+        if (response.status === 403 && data.upgrade_url) {
+          setShowUpgradeModal(true)
+          throw new Error('Savage mode requires Pro subscription')
+        }
+        if (response.status === 429) {
+          throw new Error(data.error || 'Rate limit reached. Try again tomorrow or upgrade.')
+        }
+        throw new Error(data.error || 'Failed to roast')
+      }
       setRoastResult(data.result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -50,9 +87,55 @@ export default function PRoastRetro() {
 
   const copyRoast = async () => {
     if (!roastResult) return
-    await navigator.clipboard.writeText(
-      `PRoast: ${roastResult.summary.headline}\n\nRating: ${roastResult.summary.overallRating}/5\nSins: ${roastResult.summary.totalSins}\n\nGet roasted at proast.dev`
-    )
+    try {
+      await navigator.clipboard.writeText(
+        `PRoast: ${roastResult.summary.headline}\n\nRating: ${roastResult.summary.overallRating}/5\nSins: ${roastResult.summary.totalSins}\n\nGet roasted at proast.dev`
+      )
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch {
+      setError('Failed to copy to clipboard')
+    }
+  }
+
+  const generateShareCard = async () => {
+    if (!roastResult) return
+    setShareLoading(true)
+
+    try {
+      const response = await fetch('/api/card/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          headline: roastResult.summary.headline,
+          score: roastResult.summary.overallRating * 20,
+          grade: ['F', 'D', 'C', 'B', 'A'][roastResult.summary.overallRating - 1] || 'F',
+          topSin: roastResult.sins[0]?.description || '',
+          severity: severityLevels[severityIndex].level,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate card')
+      }
+
+      // Convert the response to a blob and create a download link
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+
+      // Create download link
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `proast-roast-${Date.now()}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch {
+      setError('Failed to generate share card. This feature requires Pro.')
+    } finally {
+      setShareLoading(false)
+    }
   }
 
   return (
@@ -63,6 +146,44 @@ export default function PRoastRetro() {
         color: '#a8b2c3'
       }}
     >
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div
+            className="max-w-md w-full p-8 border-2"
+            style={{ backgroundColor: '#1a1a2e', borderColor: '#eb6f92' }}
+          >
+            <div className="text-center mb-6">
+              <span className="text-4xl">X_X</span>
+              <h2 className="text-xl font-bold mt-4" style={{ color: '#eb6f92' }}>
+                SAVAGE MODE REQUIRES PRO
+              </h2>
+            </div>
+            <p className="text-center mb-6" style={{ color: '#e8e3e3' }}>
+              Unlock Gordon Ramsay-level roasts, unlimited daily roasts, shareable cards, and roast history.
+            </p>
+            <div className="space-y-4">
+              <a
+                href="https://buy.stripe.com/8x2eVeaFX3tReimb061VK01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all"
+                style={{ borderColor: '#eb6f92', color: '#eb6f92' }}
+              >
+                [&gt;] UPGRADE TO PRO - $12/mo
+              </a>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="block w-full text-center py-3 border transition-all"
+                style={{ borderColor: '#6e6a86', color: '#6e6a86' }}
+              >
+                [x] MAYBE LATER
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/*                            HEADER                               */}
       {/* ═══════════════════════════════════════════════════════════════ */}
@@ -136,14 +257,22 @@ export default function PRoastRetro() {
             {severityLevels.map((sev, i) => (
               <button
                 key={sev.label}
-                onClick={() => setSeverityIndex(i)}
-                className="text-left p-4 transition-all border"
+                onClick={() => handleSeveritySelect(i)}
+                className="text-left p-4 transition-all border relative"
                 style={{
                   borderColor: severityIndex === i ? sev.color : '#6e6a86',
                   backgroundColor: severityIndex === i ? `${sev.color}15` : 'transparent',
                   color: severityIndex === i ? sev.color : '#6e6a86'
                 }}
               >
+                {sev.pro && (
+                  <span
+                    className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
+                    style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                  >
+                    PRO
+                  </span>
+                )}
                 <div className="flex items-center gap-2 mb-2">
                   <span>{severityIndex === i ? '(*)' : '( )'}</span>
                   <span className="font-bold">{sev.label}</span>
@@ -172,7 +301,9 @@ export default function PRoastRetro() {
           <div className="flex items-center gap-4 mb-4">
             <span className="text-xs" style={{ color: '#eb6f92' }}>// PASTE YOUR CODE</span>
             <div className="flex-1 h-px" style={{ backgroundColor: '#eb6f92' }}></div>
-            <span className="text-xs" style={{ color: '#6e6a86' }}>[-][x]</span>
+            <span className="text-xs" style={{ color: '#6e6a86' }}>
+              {codeInput.length}/10000
+            </span>
           </div>
 
           <div
@@ -183,7 +314,7 @@ export default function PRoastRetro() {
               <span style={{ color: '#f2cdcd' }}>{'>'}</span>
               <textarea
                 value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value)}
+                onChange={(e) => setCodeInput(e.target.value.slice(0, 10000))}
                 placeholder="paste your code here... we promise not to judge too harshly"
                 rows={10}
                 className="flex-1 bg-transparent outline-none resize-none text-sm"
@@ -227,6 +358,14 @@ export default function PRoastRetro() {
         {error && (
           <div className="mb-8 p-6 border" style={{ borderColor: '#eb6f92', color: '#eb6f92' }}>
             <span className="font-bold">[!] ERROR:</span> {error}
+            {error.includes('Rate limit') && (
+              <a
+                href="#pricing"
+                className="ml-2 underline hover:no-underline"
+              >
+                Upgrade to Pro
+              </a>
+            )}
           </div>
         )}
 
@@ -295,11 +434,20 @@ export default function PRoastRetro() {
                 )}
 
                 <div className="flex gap-4 justify-center">
-                  <button onClick={copyRoast} className="text-xs hover:underline" style={{ color: '#f2cdcd' }}>
-                    [:] COPY ROAST
+                  <button
+                    onClick={copyRoast}
+                    className="text-xs hover:underline transition-all"
+                    style={{ color: copySuccess ? '#a8d8b9' : '#f2cdcd' }}
+                  >
+                    {copySuccess ? '[✓] COPIED!' : '[:] COPY ROAST'}
                   </button>
-                  <button className="text-xs hover:underline" style={{ color: '#7eb8da' }}>
-                    [^] SHARE CARD
+                  <button
+                    onClick={generateShareCard}
+                    disabled={shareLoading}
+                    className="text-xs hover:underline transition-all disabled:opacity-50"
+                    style={{ color: '#7eb8da' }}
+                  >
+                    {shareLoading ? '[~] GENERATING...' : '[^] SHARE CARD'}
                   </button>
                 </div>
               </div>
@@ -322,13 +470,21 @@ export default function PRoastRetro() {
               { level: ':) GENTLE', text: '"This variable name could be more descriptive for better readability."', color: '#a8d8b9' },
               { level: ':| HONEST', text: '"Naming a variable x in a 200-line function is a code smell."', color: '#ffe9b0' },
               { level: '>:( BRUTAL', text: '"Your variable naming suggests you\'re trying to hide evidence."', color: '#f5a97f' },
-              { level: 'X_X SAVAGE', text: '"I\'ve seen better naming conventions in minified JavaScript."', color: '#eb6f92' },
+              { level: 'X_X SAVAGE', text: '"I\'ve seen better naming conventions in minified JavaScript."', color: '#eb6f92', pro: true },
             ].map((example, i) => (
               <div
                 key={i}
-                className="p-6 border"
+                className="p-6 border relative"
                 style={{ borderColor: example.color, color: example.color }}
               >
+                {example.pro && (
+                  <span
+                    className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
+                    style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                  >
+                    PRO
+                  </span>
+                )}
                 <p className="font-bold mb-3">{example.level}</p>
                 <p className="text-sm" style={{ color: '#e8e3e3' }}>{example.text}</p>
               </div>
@@ -347,7 +503,13 @@ export default function PRoastRetro() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 border" style={{ borderColor: '#eb6f92' }}>
+            <div className="p-6 border relative" style={{ borderColor: '#eb6f92' }}>
+              <span
+                className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
+                style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+              >
+                PRO
+              </span>
               <p className="font-bold mb-3" style={{ color: '#eb6f92' }}>X_X SAVAGE MODE</p>
               <p className="text-sm" style={{ color: '#e8e3e3' }}>
                 Gordon Ramsay-level feedback for devs who can handle the truth.
@@ -361,7 +523,13 @@ export default function PRoastRetro() {
               </p>
             </div>
 
-            <div className="p-6 border" style={{ borderColor: '#7eb8da' }}>
+            <div className="p-6 border relative" style={{ borderColor: '#7eb8da' }}>
+              <span
+                className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
+                style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+              >
+                PRO
+              </span>
               <p className="font-bold mb-3" style={{ color: '#7eb8da' }}>[^] SHARE CARDS</p>
               <p className="text-sm" style={{ color: '#e8e3e3' }}>
                 Generate shareable roast cards. Bond with devs through shame.
@@ -409,7 +577,7 @@ export default function PRoastRetro() {
               </div>
               <p className="text-2xl font-bold mb-6">$12<span className="text-sm font-normal">/month</span></p>
               <div className="space-y-2 mb-6 text-sm" style={{ color: '#e8e3e3' }}>
-                <p>[/] Unlimited roasts</p>
+                <p>[/] 100 roasts/day</p>
                 <p>[/] All severity levels</p>
                 <p>[/] SAVAGE mode unlocked</p>
                 <p>[/] Shareable roast cards</p>
