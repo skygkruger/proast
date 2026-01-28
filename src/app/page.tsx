@@ -484,11 +484,11 @@ export default function PRoastRetro() {
         {/* ═══════════════════════════════════════════════════════════════ */}
 
         <div className="text-center mb-6 sm:mb-8" style={{ color: '#eb6f92' }}>
-          {/* Desktop ASCII Logo */}
+          {/* ASCII Logo - responsive scaling */}
           <pre
-            className="hidden sm:inline-block"
+            className="inline-block"
             style={{
-              fontSize: '16px',
+              fontSize: 'clamp(8px, 2.4vw, 16px)',
               lineHeight: 1.05,
               fontFamily: 'Consolas, Monaco, "Courier New", monospace',
               textAlign: 'left'
@@ -503,11 +503,6 @@ export default function PRoastRetro() {
 ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝
 `}
           </pre>
-          {/* Mobile Compact Logo */}
-          <div className="sm:hidden">
-            <div className="text-3xl font-bold tracking-widest mb-1">PROAST</div>
-            <div className="text-xs" style={{ color: '#6e6a86' }}>:) · :| · {'>'}:( · X_X</div>
-          </div>
           <p className="text-xs tracking-widest mt-2" style={{ color: '#f2cdcd' }}>
             ·:·:· CODE REVIEWER WITH ATTITUDE v1.0 ·:·:·
           </p>
