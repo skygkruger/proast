@@ -96,6 +96,8 @@ export default function PRoastRetro() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
+  const [cursorVisible, setCursorVisible] = useState(true)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   const router = useRouter()
@@ -115,6 +117,12 @@ export default function PRoastRetro() {
 
     return () => subscription.unsubscribe()
   }, [supabase.auth])
+
+  // Blinking cursor effect
+  useEffect(() => {
+    const interval = setInterval(() => setCursorVisible(v => !v), 530)
+    return () => clearInterval(interval)
+  }, [])
 
   // Check URL params for checkout status
   useEffect(() => {
@@ -355,51 +363,118 @@ export default function PRoastRetro() {
       {/* ═══════════════════════════════════════════════════════════════ */}
 
       <header className="border-b" style={{ borderColor: '#6e6a86' }}>
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4">
-          <span className="tracking-wider font-bold" style={{ color: '#eb6f92' }}>PROAST</span>
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group">
+              <span className="text-lg tracking-tight" style={{ color: '#eb6f92' }}>PROAST</span>
+              <span
+                className="transition-opacity"
+                style={{
+                  color: '#eb6f92',
+                  opacity: cursorVisible ? 1 : 0
+                }}
+              >_</span>
+            </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden sm:flex gap-6 text-xs" style={{ color: '#6e6a86' }}>
-            <Link href="/docs" className="hover:text-[#eb6f92] transition-colors">[DOCS]</Link>
-            <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
-            <a href="https://github.com/skygkruger" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[GITHUB]</a>
-            <a href="https://x.com/run_veridian" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[@]</a>
-            {user ? (
-              <button onClick={handleLogout} className="hover:text-[#eb6f92] transition-colors">[LOGOUT]</button>
-            ) : (
-              <Link href="/auth/login" className="hover:text-[#eb6f92] transition-colors">[LOGIN]</Link>
-            )}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-6">
+              {[
+                { label: 'DOCS', href: '/docs' },
+                { label: 'PRICING', href: '#pricing' },
+                { label: 'GITHUB', href: 'https://github.com/skygkruger' },
+                { label: '@', href: 'https://x.com/run_veridian' },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="relative transition-colors duration-200"
+                  style={{ color: hoveredNav === item.label ? '#eb6f92' : '#6e6a86' }}
+                  onMouseEnter={() => setHoveredNav(item.label)}
+                  onMouseLeave={() => setHoveredNav(null)}
+                >
+                  <span className={`transition-all duration-200 ${hoveredNav === item.label ? 'pl-4' : ''}`}>
+                    {hoveredNav === item.label && <span className="absolute left-0" style={{ color: '#eb6f92' }}>&gt;</span>}
+                    [{item.label}]
+                  </span>
+                </Link>
+              ))}
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-1.5 transition-all duration-200"
+                  style={{
+                    border: '1px solid #6e6a86',
+                    color: '#6e6a86',
+                    background: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#6e6a86';
+                    e.currentTarget.style.color = '#1a1517';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#6e6a86';
+                  }}
+                >
+                  [LOGOUT]
+                </button>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="px-4 py-1.5 transition-all duration-200"
+                  style={{
+                    border: '1px solid #eb6f92',
+                    color: '#eb6f92',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#eb6f92';
+                    e.currentTarget.style.color = '#1a1517';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#eb6f92';
+                  }}
+                >
+                  [LOGIN]
+                </Link>
+              )}
+            </nav>
+
+            {/* Mobile Menu */}
+            <div className="flex md:hidden items-center gap-4">
+              <Link href="/docs" className="text-xs" style={{ color: '#6e6a86' }}>[DOCS]</Link>
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1 text-xs"
+                  style={{
+                    border: '1px solid #6e6a86',
+                    color: '#6e6a86',
+                    background: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                  }}
+                >
+                  [LOGOUT]
+                </button>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="px-3 py-1 text-xs"
+                  style={{
+                    border: '1px solid #eb6f92',
+                    color: '#eb6f92',
+                  }}
+                >
+                  [LOGIN]
+                </Link>
+              )}
+            </div>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="sm:hidden text-xs p-2"
-            style={{ color: '#6e6a86' }}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? '[X]' : '[=]'}
-          </button>
         </div>
-
-        {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <div
-            ref={mobileMenuRef}
-            className="sm:hidden border-t px-4 py-4 space-y-3 text-xs"
-            style={{ borderColor: '#6e6a86', backgroundColor: '#1a1517', color: '#6e6a86' }}
-          >
-            <Link href="/docs" className="block hover:text-[#eb6f92] transition-colors" onClick={() => setMobileMenuOpen(false)}>[DOCS]</Link>
-            <a href="#pricing" className="block hover:text-[#eb6f92] transition-colors" onClick={() => setMobileMenuOpen(false)}>[PRICING]</a>
-            <a href="https://github.com/skygkruger" target="_blank" rel="noopener noreferrer" className="block hover:text-[#eb6f92] transition-colors">[GITHUB]</a>
-            <a href="https://x.com/run_veridian" target="_blank" rel="noopener noreferrer" className="block hover:text-[#eb6f92] transition-colors">[@]</a>
-            {user ? (
-              <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="block hover:text-[#eb6f92] transition-colors">[LOGOUT]</button>
-            ) : (
-              <Link href="/auth/login" className="block hover:text-[#eb6f92] transition-colors" onClick={() => setMobileMenuOpen(false)}>[LOGIN]</Link>
-            )}
-          </div>
-        )}
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
