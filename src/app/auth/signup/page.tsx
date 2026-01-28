@@ -66,7 +66,7 @@ export default function SignUpPage() {
   return (
     <div
       className="min-h-screen font-mono text-sm flex items-center justify-center px-4 py-8"
-      style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}
+      style={{ backgroundColor: '#1a1517', color: '#a8b2c3' }}
     >
       <div className="w-full max-w-md sm:max-w-md">
         {/* Header */}
@@ -156,7 +156,7 @@ export default function SignUpPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 border-2 font-bold transition-all hover:bg-[#a8d8b9] hover:text-[#1a1a2e] disabled:opacity-50"
+                  className="w-full py-3 border-2 font-bold transition-all hover:bg-[#a8d8b9] hover:text-[#1a1517] disabled:opacity-50"
                   style={{ borderColor: '#a8d8b9', color: '#a8d8b9' }}
                 >
                   {loading ? '[~] CREATING...' : '[+] CREATE ACCOUNT'}
@@ -175,7 +175,7 @@ export default function SignUpPage() {
                 type="button"
                 onClick={handleGitHubSignUp}
                 disabled={loading}
-                className="w-full py-3 border font-bold transition-all hover:bg-[#6e6a86] hover:text-[#1a1a2e] disabled:opacity-50"
+                className="w-full py-3 border font-bold transition-all hover:bg-[#6e6a86] hover:text-[#1a1517] disabled:opacity-50"
                 style={{ borderColor: '#6e6a86', color: '#6e6a86' }}
               >
                 [*] CONTINUE WITH GITHUB

@@ -288,7 +288,7 @@ export default function PRoastRetro() {
     <div
       className="min-h-screen font-mono text-sm leading-relaxed"
       style={{
-        backgroundColor: '#1a1a2e',
+        backgroundColor: '#1a1517',
         color: '#a8b2c3'
       }}
     >
@@ -297,7 +297,7 @@ export default function PRoastRetro() {
         <div className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 animate-pulse">
           <div
             className="px-4 sm:px-6 py-3 sm:py-4 border-2 shadow-lg"
-            style={{ backgroundColor: '#1a1a2e', borderColor: '#a8d8b9', color: '#a8d8b9' }}
+            style={{ backgroundColor: '#1a1517', borderColor: '#a8d8b9', color: '#a8d8b9' }}
           >
             <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
               <span className="text-lg sm:text-xl">✓</span>
@@ -318,7 +318,7 @@ export default function PRoastRetro() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div
             className="max-w-md w-full p-6 sm:p-8 border-2"
-            style={{ backgroundColor: '#1a1a2e', borderColor: '#eb6f92' }}
+            style={{ backgroundColor: '#1a1517', borderColor: '#eb6f92' }}
           >
             <div className="text-center mb-4 sm:mb-6">
               <span className="text-3xl sm:text-4xl">X_X</span>
@@ -333,7 +333,7 @@ export default function PRoastRetro() {
               <button
                 onClick={() => handleUpgrade('pro')}
                 disabled={checkoutLoading}
-                className="block w-full text-center py-2.5 sm:py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all disabled:opacity-50 text-sm"
+                className="block w-full text-center py-2.5 sm:py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1517] transition-all disabled:opacity-50 text-sm"
                 style={{ borderColor: '#eb6f92', color: '#eb6f92' }}
               >
                 {checkoutLoading ? '[~] LOADING...' : '[>] UPGRADE TO PRO - $12/mo'}
@@ -387,7 +387,7 @@ export default function PRoastRetro() {
           <div
             ref={mobileMenuRef}
             className="sm:hidden border-t px-4 py-4 space-y-3 text-xs"
-            style={{ borderColor: '#6e6a86', backgroundColor: '#1a1a2e', color: '#6e6a86' }}
+            style={{ borderColor: '#6e6a86', backgroundColor: '#1a1517', color: '#6e6a86' }}
           >
             <Link href="/docs" className="block hover:text-[#eb6f92] transition-colors" onClick={() => setMobileMenuOpen(false)}>[DOCS]</Link>
             <a href="#pricing" className="block hover:text-[#eb6f92] transition-colors" onClick={() => setMobileMenuOpen(false)}>[PRICING]</a>
@@ -476,7 +476,7 @@ export default function PRoastRetro() {
                 {sev.pro && (
                   <span
                     className="absolute top-1 right-1 sm:top-2 sm:right-2 text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 font-bold"
-                    style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                    style={{ backgroundColor: '#c4a7e7', color: '#1a1517' }}
                   >
                     PRO
                   </span>
@@ -516,7 +516,7 @@ export default function PRoastRetro() {
 
           <div
             className="p-4 sm:p-6 border transition-colors duration-300"
-            style={{ borderColor: severityLevels[severityIndex].color, backgroundColor: '#16161a' }}
+            style={{ borderColor: severityLevels[severityIndex].color, backgroundColor: '#211b1d' }}
           >
             <div className="flex items-start gap-2 sm:gap-3">
               <span className="hidden sm:inline" style={{ color: severityLevels[severityIndex].color }}>{'>'}</span>
@@ -610,7 +610,7 @@ export default function PRoastRetro() {
                       className="p-3 sm:p-4 border-l-4"
                       style={{
                         borderColor: sin.severity === 'cardinal' ? '#eb6f92' : sin.severity === 'mortal' ? '#f5a97f' : '#ffe9b0',
-                        backgroundColor: '#16161a'
+                        backgroundColor: '#211b1d'
                       }}
                     >
                       <p className="font-bold mb-2 text-sm" style={{ color: sin.severity === 'cardinal' ? '#eb6f92' : sin.severity === 'mortal' ? '#f5a97f' : '#ffe9b0' }}>
@@ -618,7 +618,7 @@ export default function PRoastRetro() {
                       </p>
                       <p className="mb-3 text-xs sm:text-sm" style={{ color: '#e8e3e3' }}>{sin.description}</p>
                       {sin.codeSnippet && (
-                        <pre className="p-2 sm:p-3 mb-3 text-[10px] sm:text-xs overflow-x-auto" style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}>
+                        <pre className="p-2 sm:p-3 mb-3 text-[10px] sm:text-xs overflow-x-auto" style={{ backgroundColor: '#1a1517', color: '#a8b2c3' }}>
                           {sin.codeSnippet}
                         </pre>
                       )}
@@ -684,7 +684,7 @@ export default function PRoastRetro() {
                 {example.pro && (
                   <span
                     className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
-                    style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                    style={{ backgroundColor: '#c4a7e7', color: '#1a1517' }}
                   >
                     PRO
                   </span>
@@ -710,7 +710,7 @@ export default function PRoastRetro() {
             <div className="p-4 sm:p-6 border relative" style={{ borderColor: '#eb6f92' }}>
               <span
                 className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
-                style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                style={{ backgroundColor: '#c4a7e7', color: '#1a1517' }}
               >
                 PRO
               </span>
@@ -730,7 +730,7 @@ export default function PRoastRetro() {
             <div className="p-4 sm:p-6 border relative" style={{ borderColor: '#7eb8da' }}>
               <span
                 className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 font-bold"
-                style={{ backgroundColor: '#c4a7e7', color: '#1a1a2e' }}
+                style={{ backgroundColor: '#c4a7e7', color: '#1a1517' }}
               >
                 PRO
               </span>
@@ -790,7 +790,7 @@ export default function PRoastRetro() {
               <button
                 onClick={() => handleUpgrade('pro')}
                 disabled={checkoutLoading}
-                className="w-full text-center py-2 sm:py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1a2e] transition-all disabled:opacity-50 text-sm"
+                className="w-full text-center py-2 sm:py-3 border-2 font-bold hover:bg-[#eb6f92] hover:text-[#1a1517] transition-all disabled:opacity-50 text-sm"
                 style={{ borderColor: '#eb6f92' }}
               >
                 {checkoutLoading ? '[~] LOADING...' : '[>] GET ROASTED'}
@@ -815,7 +815,7 @@ export default function PRoastRetro() {
               <button
                 onClick={() => handleUpgrade('team')}
                 disabled={checkoutLoading}
-                className="w-full text-center py-2 sm:py-3 border-2 font-bold hover:bg-[#c4a7e7] hover:text-[#1a1a2e] transition-all disabled:opacity-50 text-sm"
+                className="w-full text-center py-2 sm:py-3 border-2 font-bold hover:bg-[#c4a7e7] hover:text-[#1a1517] transition-all disabled:opacity-50 text-sm"
                 style={{ borderColor: '#c4a7e7' }}
               >
                 {checkoutLoading ? '[~] LOADING...' : '[>] TEAM UP'}

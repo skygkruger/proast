@@ -7,8 +7,9 @@
 /* ════════════════════════════════════════════════════════════ */
 
 :root {
-  --bg-deep: #1a1a2e;
-  --bg-card: #16161a;
+  /* Backgrounds - Dark with subtle coral/warm warmth */
+  --bg-deep: #1a1517;
+  --bg-card: #211b1d;
   --text-primary: #e8e3e3;
   --text-secondary: #a8b2c3;
   --text-muted: #6e6a86;

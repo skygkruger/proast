@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 const colors = {
-  bg: '#1a1a2e',
+  bg: '#1a1517',
   bgLight: '#252542',
   text: '#e8e3e3',
   muted: '#6e6a86',

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#1a1a2e',
+            backgroundColor: '#1a1517',
             fontFamily: 'monospace',
             padding: '60px',
             position: 'relative',

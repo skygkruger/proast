@@ -72,7 +72,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen font-mono text-sm flex items-center justify-center px-4 py-8"
-      style={{ backgroundColor: '#1a1a2e', color: '#a8b2c3' }}
+      style={{ backgroundColor: '#1a1517', color: '#a8b2c3' }}
     >
       <div className="w-full max-w-md sm:max-w-md">
         {/* Header */}
@@ -165,7 +165,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 border-2 font-bold transition-all hover:bg-[#eb6f92] hover:text-[#1a1a2e] disabled:opacity-50"
+              className="w-full py-3 border-2 font-bold transition-all hover:bg-[#eb6f92] hover:text-[#1a1517] disabled:opacity-50"
               style={{ borderColor: '#eb6f92', color: '#eb6f92' }}
             >
               {loading ? '[~] LOADING...' : mode === 'password' ? '[>] LOGIN' : '[>] SEND MAGIC LINK'}
@@ -184,7 +184,7 @@ export default function LoginPage() {
             type="button"
             onClick={handleGitHubLogin}
             disabled={loading}
-            className="w-full py-3 border font-bold transition-all hover:bg-[#6e6a86] hover:text-[#1a1a2e] disabled:opacity-50"
+            className="w-full py-3 border font-bold transition-all hover:bg-[#6e6a86] hover:text-[#1a1517] disabled:opacity-50"
             style={{ borderColor: '#6e6a86', color: '#6e6a86' }}
           >
             [*] CONTINUE WITH GITHUB

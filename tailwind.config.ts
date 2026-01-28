@@ -9,10 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Backgrounds
-        'retro-deep': '#1a1a2e',
-        'retro-card': '#16161a',
-        'retro-hover': '#232336',
+        // Backgrounds - Dark with subtle coral/warm warmth
+        'retro-deep': '#1a1517',
+        'retro-card': '#211b1d',
+        'retro-hover': '#2a2224',
         // Text
         'retro-text': '#e8e3e3',
         'retro-secondary': '#a8b2c3',
