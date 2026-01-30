@@ -47,11 +47,47 @@ export async function POST(request: NextRequest) {
             plan = 'team'
           }
 
-          // Find user by customer ID or email
+          // Try multiple strategies to find and update the user
           const customerEmail = session.customer_details?.email
+          const clientReferenceId = session.client_reference_id // user_id if set during checkout
+          const subscriptionMetadata = subscription.metadata?.user_id
 
-          if (customerEmail) {
-            // Update user profile
+          let updated = false
+
+          // Strategy 1: Update by customer ID (if they've purchased before)
+          const { data: existingCustomer, error: customerError } = await admin
+            .from('profiles')
+            .update({
+              plan,
+              stripe_customer_id: customerId,
+              updated_at: new Date().toISOString()
+            })
+            .eq('stripe_customer_id', customerId)
+            .select()
+            .single()
+
+          if (existingCustomer && !customerError) {
+            updated = true
+          }
+
+          // Strategy 2: Update by user_id from metadata
+          if (!updated && subscriptionMetadata) {
+            const { error } = await admin
+              .from('profiles')
+              .update({
+                plan,
+                stripe_customer_id: customerId,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', subscriptionMetadata)
+
+            if (!error) {
+              updated = true
+            }
+          }
+
+          // Strategy 3: Update by email (fallback)
+          if (!updated && customerEmail) {
             const { error } = await admin
               .from('profiles')
               .update({
@@ -61,9 +97,17 @@ export async function POST(request: NextRequest) {
               })
               .eq('email', customerEmail)
 
-            if (error) {
-              console.error('Failed to update profile after checkout:', error)
+            if (!error) {
+              updated = true
             }
+          }
+
+          if (!updated) {
+            console.error('Failed to update profile after checkout - no matching user found', {
+              customerId,
+              customerEmail,
+              subscriptionMetadata
+            })
           }
         }
         break
@@ -80,8 +124,11 @@ export async function POST(request: NextRequest) {
           plan = 'team'
         }
 
-        // Check subscription status
-        if (subscription.status !== 'active' && subscription.status !== 'trialing') {
+        // Check subscription status - allow grace period for past_due
+        // past_due users keep access while Stripe retries payment
+        // invoice.payment_failed will downgrade after 3 failed attempts
+        const activeStatuses = ['active', 'trialing', 'past_due']
+        if (!activeStatuses.includes(subscription.status)) {
           plan = 'free'
         }
 
@@ -122,9 +169,27 @@ export async function POST(request: NextRequest) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
+        const attemptCount = invoice.attempt_count || 0
 
-        // Optionally notify user or take action
-        console.warn(`Payment failed for customer: ${customerId}`)
+        console.warn(`Payment failed for customer: ${customerId}, attempt: ${attemptCount}`)
+
+        // After 3 failed attempts, downgrade user to free
+        // This prevents continued access with perpetually failing payments
+        if (attemptCount >= 3) {
+          const { error } = await admin
+            .from('profiles')
+            .update({
+              plan: 'free',
+              updated_at: new Date().toISOString()
+            })
+            .eq('stripe_customer_id', customerId)
+
+          if (error) {
+            console.error('Failed to downgrade profile after payment failures:', error)
+          } else {
+            console.log(`Downgraded customer ${customerId} to free after ${attemptCount} failed payment attempts`)
+          }
+        }
         break
       }
 

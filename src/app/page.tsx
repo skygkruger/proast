@@ -382,6 +382,7 @@ export default function PRoastRetro() {
               {[
                 { label: 'DOCS', href: '/docs' },
                 { label: 'PRICING', href: '#pricing' },
+                ...(user ? [{ label: 'HISTORY', href: '/history' }] : []),
                 { label: 'GITHUB', href: 'https://github.com/skygkruger' },
                 { label: '@', href: 'https://x.com/run_veridian' },
               ].map((item) => (
@@ -446,6 +447,7 @@ export default function PRoastRetro() {
             {/* Mobile Menu */}
             <div className="flex md:hidden items-center gap-4">
               <Link href="/docs" className="text-xs" style={{ color: '#6e6a86' }}>[DOCS]</Link>
+              {user && <Link href="/history" className="text-xs" style={{ color: '#6e6a86' }}>[HISTORY]</Link>}
               {user ? (
                 <button
                   onClick={handleLogout}
