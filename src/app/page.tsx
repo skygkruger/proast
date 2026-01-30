@@ -936,8 +936,23 @@ export default function PRoastRetro() {
       <footer className="border-t py-8 sm:py-12" style={{ borderColor: '#6e6a86' }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center text-xs sm:text-sm" style={{ color: '#6e6a86' }}>
           <p className="mb-2">ROASTED WITH {'<3'} IN THE TERMINAL</p>
-          <p className="mb-4">(c) 2025 PROAST</p>
-          <a href="#pricing" className="text-xs hover:text-[#eb6f92] transition-colors">[PRICING]</a>
+          <p className="mb-4">(c) 2026 PROAST · A VERIDIAN TOOLS PRODUCT</p>
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
+            <a href="#" className="hover:text-[#eb6f92] transition-colors">[HOME]</a>
+            <a href="#pricing" className="hover:text-[#eb6f92] transition-colors">[PRICING]</a>
+            <a href="https://github.com/skygkruger" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[GITHUB]</a>
+            <a href="https://x.com/run_veridian" target="_blank" rel="noopener noreferrer" className="hover:text-[#eb6f92] transition-colors">[X]</a>
+            <a href="mailto:sky@veridian.run" className="hover:text-[#eb6f92] transition-colors">[CONTACT]</a>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <a href="/terms" className="hover:text-[#eb6f92] transition-colors">[TERMS]</a>
+            <a href="/privacy" className="hover:text-[#eb6f92] transition-colors">[PRIVACY]</a>
+          </div>
+          {/* VERIDIAN Solidarity Footer */}
+          <div className="max-w-md mx-auto p-4 border" style={{ borderColor: '#6e6a86' }}>
+            <p className="mb-2" style={{ color: '#eb6f92' }}>15% of revenue supports free emotional tech sanctuaries</p>
+            <p className="text-[10px]">VERIDIAN believes technology should heal, not extract.</p>
+          </div>
         </div>
       </footer>
     </div>
